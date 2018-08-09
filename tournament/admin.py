@@ -34,3 +34,9 @@ class TableAdmin(admin.ModelAdmin):
     list_editable = ('priority',)
 
     search_fields = ('name',)
+
+
+@admin.register(Turn)
+class TurnAdmin(admin.ModelAdmin):
+    list_display = ('__str__', 'scheduled_time',)
+
