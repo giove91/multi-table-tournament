@@ -7,12 +7,8 @@ class PlayerInline(admin.TabularInline):
 
 @admin.register(Team)
 class TeamAdmin(admin.ModelAdmin):
-    inlines = [
-        PlayerInline,
-    ]
-
+    inlines = (PlayerInline,)
     list_display = ('name', 'players')
-    
     search_fields = ('name',)
     
     def players(self, obj):
@@ -40,3 +36,14 @@ class TableAdmin(admin.ModelAdmin):
 class RoundAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'scheduled_time',)
 
+
+
+class TeamScoreInline(admin.TabularInline):
+    model = TeamScore
+    extra = 2
+
+@admin.register(Match)
+class MatchAdmin(admin.ModelAdmin):
+    inlines = (TeamScoreInline,)
+    list_display = ('__str__', 'round', 'table',)
+    list_filter = ('round', 'table',)

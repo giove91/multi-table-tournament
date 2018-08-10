@@ -69,4 +69,19 @@ class Round(models.Model):
 
 class Match(models.Model):
     round = models.ForeignKey(Round, on_delete=models.CASCADE)
+    teams = models.ManyToManyField(Team, through='TeamScore')
+    table = models.ForeignKey(Table, on_delete=models.CASCADE, blank=True, null=True, default=None)
+    
+    def __str__(self):
+        return 'Match %s' % ' - '.join(team.name for team in self.teams.all())
+
+
+class TeamScore(models.Model):
+    match = models.ForeignKey(Match, on_delete=models.CASCADE)
+    team = models.ForeignKey(Team, on_delete=models.CASCADE)
+    score = models.DecimalField(max_digits=4, decimal_places=1, blank=True, null=True, default=None)
+    
+    class Meta:
+        ordering = ['match__pk', 'team__name']
+
 
