@@ -36,7 +36,7 @@ class TableAdmin(admin.ModelAdmin):
     search_fields = ('name',)
 
 
-@admin.register(Turn)
-class TurnAdmin(admin.ModelAdmin):
+@admin.register(Round)
+class RoundAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'scheduled_time',)
 

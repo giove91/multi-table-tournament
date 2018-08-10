@@ -2,8 +2,10 @@ from django.db import models
 from django.core.validators import RegexValidator
 
 
+
 class Team(models.Model):
     name = models.CharField(max_length=1024)
+    active = models.BooleanField(default=True, help_text='Inactive teams are not considered for future turns and do not appear in the scoreboard.')
     
     def __str__(self):
         return self.name
@@ -32,7 +34,7 @@ class Player(models.Model):
 
 
 class Table(models.Model):
-    name = models.CharField(max_length=1024)
+    name = models.CharField(max_length=256)
     priority = models.IntegerField(default=100, help_text='Tables with higher priority are preferred when creating a new turn.')
     
 
@@ -45,23 +47,26 @@ class Table(models.Model):
 
 
 
-class Turn(models.Model):
+class Round(models.Model):
     def number_default():
-        if Turn.objects.count() == 0:
+        if Round.objects.count() == 0:
             return 1
         else:
-            return Turn.objects.latest().number + 1
+            return Round.objects.latest().number + 1
     
     number = models.PositiveIntegerField(default=number_default)
     scheduled_time = models.DateTimeField(blank=True, null=True, default=None, help_text="Used only for displaying purposes.")
     
     
     def __str__(self):
-        return 'Turn %d' % self.number
+        return 'Round %d' % self.number
     
     class Meta:
         ordering = ['number']
         get_latest_by = 'number'
 
 
+
+class Match(models.Model):
+    round = models.ForeignKey(Round, on_delete=models.CASCADE)
 
