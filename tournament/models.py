@@ -1,3 +1,6 @@
+import networkx as nx
+import itertools
+
 from django.db import models
 from django.core.validators import RegexValidator
 
@@ -8,6 +11,43 @@ class Tournament(models.Model):
     
     def __str__(self):
         return self.name
+    
+    def num_rounds(self):
+        return Round.objects.filter(tournament=self).count()
+    
+    
+    def create_round(self):
+        """
+        Create a new round for this tournament.
+        """
+        teams = Team.objects.filter(active=True).order_by('pk')
+        tables = Table.objects.all()
+        # rounds = Round.objects.filter(tournament=self)
+        matches = Match.objects.filter(round__tournament=self)
+        
+        BYE = 'BYE'
+        
+        previous_pairs = set(match.team_pair() for match in matches)
+        previous_byes = set(match.team_bye() for match in matches)
+        
+        # pair teams
+        G = nx.Graph()
+        G.add_nodes_from(teams)
+        
+        # TODO: set correct weights based on the scoreboard
+        
+        for pair in itertools.combinations(teams, 2):
+            if pair not in previous_pairs:
+                G.add_edge(*pair, weight=1)
+
+        if len(teams) % 2 == 1:
+            # add bye
+            G.add_node(BYE)
+            G.add_weighted_edges_from((team, BYE, 1) for team in teams if team not in previous_byes)
+
+        
+        print(G.edges(data=True))
+
     
     class Meta:
         ordering = ['creation_time']
@@ -87,6 +127,25 @@ class Match(models.Model):
     
     def __str__(self):
         return ' - '.join(team.name for team in self.teams.all()) if self.teams.count() > 0 else 'Empty match'
+    
+    
+    def team_pair(self):
+        """
+        Return the pair of playing teams, ordered by primary key.
+        Return None if this match was a Bye.
+        """
+        if self.type == self.NORMAL:
+            return self.teams.all().order_by('pk')
+        else:
+            return None
+    
+    
+    def team_bye(self):
+        """
+        Return the team if this match was a Bye, otherwise return None.
+        """
+        return self.teams.get() if self.type == self.BYE else None
+    
     
     class Meta:
         ordering = ['round', 'type', 'pk']
