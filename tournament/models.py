@@ -2,6 +2,18 @@ from django.db import models
 from django.core.validators import RegexValidator
 
 
+class Tournament(models.Model):
+    name = models.CharField(max_length=1024)
+    creation_time = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        ordering = ['creation_time']
+        get_latest_by = 'creation_time'
+
+
 
 class Team(models.Model):
     name = models.CharField(max_length=1024)
@@ -48,13 +60,8 @@ class Table(models.Model):
 
 
 class Round(models.Model):
-    def number_default():
-        if Round.objects.count() == 0:
-            return 1
-        else:
-            return Round.objects.latest().number + 1
-    
-    number = models.PositiveIntegerField(default=number_default)
+    number = models.PositiveIntegerField()
+    tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
     scheduled_time = models.DateTimeField(blank=True, null=True, default=None, help_text="Used only for displaying purposes.")
     
     
@@ -68,12 +75,22 @@ class Round(models.Model):
 
 
 class Match(models.Model):
+    NORMAL = 'N'
+    BYE = 'B'
+    TYPE_CHOICES = ((NORMAL, 'Normal'), (BYE, 'Bye'))
+    
     round = models.ForeignKey(Round, on_delete=models.CASCADE)
-    teams = models.ManyToManyField(Team, through='TeamScore')
+    type = models.CharField(max_length=1, choices=TYPE_CHOICES, default=NORMAL)
     table = models.ForeignKey(Table, on_delete=models.CASCADE, blank=True, null=True, default=None)
+    teams = models.ManyToManyField(Team, through='TeamScore')
+    players = models.ManyToManyField(Player, through='PlayerScore')
     
     def __str__(self):
-        return 'Match %s' % ' - '.join(team.name for team in self.teams.all())
+        return ' - '.join(team.name for team in self.teams.all()) if self.teams.count() > 0 else 'Empty match'
+    
+    class Meta:
+        ordering = ['round', 'type', 'pk']
+        verbose_name_plural = 'matches'
 
 
 class TeamScore(models.Model):
@@ -82,6 +99,15 @@ class TeamScore(models.Model):
     score = models.DecimalField(max_digits=4, decimal_places=1, blank=True, null=True, default=None)
     
     class Meta:
-        ordering = ['match__pk', 'team__name']
+        ordering = ['match', 'team']
+
+
+class PlayerScore(models.Model):
+    match = models.ForeignKey(Match, on_delete=models.CASCADE)
+    player = models.ForeignKey(Player, on_delete=models.CASCADE)
+    score = models.DecimalField(max_digits=4, decimal_places=1, blank=True, null=True, default=None)
+    
+    class Meta:
+        ordering = ['match', 'player']
 
 

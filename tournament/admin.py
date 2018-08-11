@@ -2,6 +2,13 @@ from django.contrib import admin
 from .models import *
 
 
+@admin.register(Tournament)
+class TournamentAdmin(admin.ModelAdmin):
+    list_display = ('name', 'creation_time')
+    search_fields = ('name',)
+
+
+
 class PlayerInline(admin.TabularInline):
     model = Player
 
@@ -40,10 +47,20 @@ class RoundAdmin(admin.ModelAdmin):
 
 class TeamScoreInline(admin.TabularInline):
     model = TeamScore
+    verbose_name_plural = 'teams'
+    max_num = 2
     extra = 2
+
+class PlayerScoreInline(admin.TabularInline):
+    model = PlayerScore
+    verbose_name_plural = 'players'
+    extra = 0
 
 @admin.register(Match)
 class MatchAdmin(admin.ModelAdmin):
-    inlines = (TeamScoreInline,)
+    inlines = (TeamScoreInline, PlayerScoreInline)
     list_display = ('__str__', 'round', 'table',)
     list_filter = ('round', 'table',)
+    autocomplete_fields = ('players',)
+
+
