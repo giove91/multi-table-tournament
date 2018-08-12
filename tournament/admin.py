@@ -4,7 +4,7 @@ from .models import *
 
 @admin.register(Tournament)
 class TournamentAdmin(admin.ModelAdmin):
-    list_display = ('name', 'creation_time', 'num_rounds')
+    list_display = ('name', 'creation_time', 'num_rounds', 'bye_score')
     search_fields = ('name',)
 
 
@@ -45,21 +45,21 @@ class RoundAdmin(admin.ModelAdmin):
 
 
 
-class TeamScoreInline(admin.TabularInline):
-    model = TeamScore
+class TeamResultInline(admin.TabularInline):
+    model = TeamResult
     verbose_name_plural = 'teams'
     max_num = 2
     extra = 2
 
-class PlayerScoreInline(admin.TabularInline):
-    model = PlayerScore
+class PlayerResultInline(admin.TabularInline):
+    model = PlayerResult
     verbose_name_plural = 'players'
     extra = 0
 
 @admin.register(Match)
 class MatchAdmin(admin.ModelAdmin):
-    inlines = (TeamScoreInline, PlayerScoreInline)
-    list_display = ('__str__', 'round', 'table',)
+    inlines = (TeamResultInline, PlayerResultInline)
+    list_display = ('__str__', 'round', 'type', 'table', 'team_score_counter')
     list_filter = ('round', 'table',)
     autocomplete_fields = ('players',)
 

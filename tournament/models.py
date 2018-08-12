@@ -1,13 +1,57 @@
 import networkx as nx
 import itertools
+from collections import Counter
+from decimal import Decimal
 
 from django.db import models
 from django.core.validators import RegexValidator
+
+NORMAL = 'N'
+BYE = 'B'
+
+
+class Score:
+    """
+    A score of a team or a player.
+    This class comprises a primary (more important) and a secondary (less important) score.
+    It also keeps track of the number of matches and (in the case of one match)
+    of the type of match (normal/bye).
+    """
+    def __init__(self, primary=0, secondary=0, num_matches=0, match_type=None):
+        self.primary = primary
+        self.secondary = secondary
+        self.num_matches = num_matches
+        self.match_type = match_type
+    
+    
+    def __repr__(self):
+        return "(%r, %r)" % (self.primary, self.secondary)
+    
+    def __le__(self, other):
+        return self.primary < other.primary or self.primary == other.primary and self.secondary <= other.secondary
+    
+    def to_int(self):
+        """
+        Integer representation of the score, used in round creation.
+        The primary score weights much more than the secondary score.
+        """
+        return int(10*(100 * self.primary + self.secondary))
+    
+    
+    def __add__(self, other):
+        return Score(self.primary + other.primary, self.secondary + other.secondary, self.num_matches + other.num_matches)
+    
+    def __radd__(self, other):
+        if other is 0:
+            return self
+        else:
+            return self + other
 
 
 class Tournament(models.Model):
     name = models.CharField(max_length=1024)
     creation_time = models.DateTimeField(auto_now_add=True)
+    bye_score = models.DecimalField(max_digits=4, decimal_places=1, default=3, help_text='Score to assign for a bye.')
     
     def __str__(self):
         return self.name
@@ -115,15 +159,13 @@ class Round(models.Model):
 
 
 class Match(models.Model):
-    NORMAL = 'N'
-    BYE = 'B'
     TYPE_CHOICES = ((NORMAL, 'Normal'), (BYE, 'Bye'))
     
     round = models.ForeignKey(Round, on_delete=models.CASCADE)
     type = models.CharField(max_length=1, choices=TYPE_CHOICES, default=NORMAL)
     table = models.ForeignKey(Table, on_delete=models.CASCADE, blank=True, null=True, default=None)
-    teams = models.ManyToManyField(Team, through='TeamScore')
-    players = models.ManyToManyField(Player, through='PlayerScore')
+    teams = models.ManyToManyField(Team, through='TeamResult')
+    players = models.ManyToManyField(Player, through='PlayerResult')
     
     def __str__(self):
         return ' - '.join(team.name for team in self.teams.all()) if self.teams.count() > 0 else 'Empty match'
@@ -134,7 +176,7 @@ class Match(models.Model):
         Return the pair of playing teams, ordered by primary key.
         Return None if this match was a Bye.
         """
-        if self.type == self.NORMAL:
+        if self.type == NORMAL:
             return self.teams.all().order_by('pk')
         else:
             return None
@@ -144,15 +186,50 @@ class Match(models.Model):
         """
         Return the team if this match was a Bye, otherwise return None.
         """
-        return self.teams.get() if self.type == self.BYE else None
+        return self.teams.get() if self.type == BYE else None
+    
+    
+    def team_score_counter(self, fill_results=False):
+        """
+        Return a Counter with the scores of this match.
+        """
+        if self.type == BYE:
+            return Counter({
+                team_result.team: Score(1, self.round.tournament.bye_score, 1, BYE) for team_result in self.teamresult_set.all()
+            })
+        
+        elif any(team_result.score is None for team_result in self.teamresult_set.all()):
+            # this match is not completed
+            if fill_results:
+                # treat all results as victories
+                return Counter({
+                    team_result.team: Score(1, self.round.tournament.bye_score, 1, NORMAL) for team_result in self.teamresult_set.all()
+                })
+            
+            else:
+                return Counter()
+        
+        else:
+            scores = set(team_result.score for team_result in self.teamresult_set.all())
+            if len(scores) == 1:
+                # draw
+                return Counter({
+                    team_result.team: Score(Decimal('0.5'), team_result.score, 1, NORMAL) for team_result in self.teamresult_set.all()
+                })
+            
+            else:
+                # victory for one team
+                return Counter({
+                    team_result.team: Score(1 if team_result.score == max(scores) else 0, team_result.score, 1, NORMAL) for team_result in self.teamresult_set.all()
+                })
     
     
     class Meta:
-        ordering = ['round', 'type', 'pk']
+        ordering = ['round', '-type', 'pk']
         verbose_name_plural = 'matches'
 
 
-class TeamScore(models.Model):
+class TeamResult(models.Model):
     match = models.ForeignKey(Match, on_delete=models.CASCADE)
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
     score = models.DecimalField(max_digits=4, decimal_places=1, blank=True, null=True, default=None)
@@ -161,7 +238,7 @@ class TeamScore(models.Model):
         ordering = ['match', 'team']
 
 
-class PlayerScore(models.Model):
+class PlayerResult(models.Model):
     match = models.ForeignKey(Match, on_delete=models.CASCADE)
     player = models.ForeignKey(Player, on_delete=models.CASCADE)
     score = models.DecimalField(max_digits=4, decimal_places=1, blank=True, null=True, default=None)

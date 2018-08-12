@@ -28,7 +28,7 @@ if __name__ == '__main__':
     # create teams
     print("Create teams")
     Team.objects.all().delete()
-    team_names = random.sample(TEAM_NAMES, args.num_teams)
+    team_names = TEAM_NAMES[:args.num_teams]
     teams = [Team.objects.create(name=name) for name in team_names]
     
     # create players
