@@ -48,7 +48,7 @@ class PlayerAdmin(admin.ModelAdmin):
 
 @admin.register(Table)
 class TableAdmin(admin.ModelAdmin):
-    list_display = ('name', 'priority')
+    list_display = ('name', 'priority', 'num_matches')
     list_editable = ('priority',)
 
     search_fields = ('name',)
@@ -57,19 +57,20 @@ class TableAdmin(admin.ModelAdmin):
 @admin.register(Round)
 class RoundAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'tournament', 'num_matches', 'scheduled_time', 'team_scoreboard')
-    list_display_links = ('tournament',)
 
 
 
 class TeamResultInline(admin.TabularInline):
     model = TeamResult
     verbose_name_plural = 'teams'
+    autocomplete_fields = ('team',)
     max_num = 2
     extra = 2
 
 class PlayerResultInline(admin.TabularInline):
     model = PlayerResult
     verbose_name_plural = 'players'
+    autocomplete_fields = ('player',)
     extra = 0
 
 @admin.register(Match)

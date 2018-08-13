@@ -263,6 +263,9 @@ class Table(models.Model):
     def __str__(self):
         return self.name
 
+    def num_matches(self):
+        return Match.objects.filter(table=self).count()
+
     class Meta:
         ordering = ['name']
         unique_together = ('name',)
