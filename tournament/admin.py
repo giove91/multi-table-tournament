@@ -1,4 +1,4 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from .models import *
 
 from django_object_actions import DjangoObjectActions # https://github.com/crccheck/django-object-actions
@@ -10,8 +10,11 @@ class TournamentAdmin(DjangoObjectActions, admin.ModelAdmin):
     search_fields = ('name',)
     
     def create_round(self, request, obj):
-        obj.create_round()
-        self.message_user(request, "New round created.")
+        round_number, success = obj.create_round()
+        if not success:
+            self.message_user(request, "Round %d created, but not all teams could be paired." % round_number, level=messages.WARNING)
+        else:
+            self.message_user(request, "Round %d created." % round_number, level=messages.SUCCESS)
     
     create_round.label = "Create round"
     create_round.short_description = "Generate a new round with matches"
