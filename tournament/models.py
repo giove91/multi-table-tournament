@@ -117,8 +117,8 @@ class Tournament(models.Model):
             
             # analyze scoreboard
             scoreboard = self.team_scoreboard(fill_results=True) # pending results are considered as full victories for all teams
-            print("Scoreboard")
-            print(scoreboard)
+            # print("Scoreboard")
+            # print(scoreboard)
             
             clusters = {} # clusters of teams with the same score
             for team in teams:
@@ -127,10 +127,10 @@ class Tournament(models.Model):
                     clusters[score] = []
                 clusters[score].append(team)
             
-            print(clusters)
+            # print(clusters)
             
             M = len(teams) * (max(clusters) - min(clusters)) + 1 # some big constant
-            print("M = %d" % M)
+            # print("M = %d" % M)
             
             score_to_pos = {}
             pos = 0
@@ -138,7 +138,7 @@ class Tournament(models.Model):
                 score_to_pos[score] = pos
                 pos += 1
             
-            print(score_to_pos)
+            # print(score_to_pos)
             
             for pair in itertools.combinations(teams, 2):
                 if pair not in previous_pairs:
@@ -162,7 +162,7 @@ class Tournament(models.Model):
             matching = nx.max_weight_matching(G, maxcardinality=True)
             pairs = list((a, b) if a != BYE and b != BYE else (a,) if b == BYE else (b,) for (a, b) in matching)
         
-        print(pairs)
+        # print(pairs)
         
         ### assign tables ###
         G = nx.Graph()
@@ -186,7 +186,7 @@ class Tournament(models.Model):
         
         pairs_to_tables = {}
         for edge in matching:
-            print(edge)
+            # print(edge)
             if isinstance(edge[0], Table):
                 edge = reversed(edge)
             

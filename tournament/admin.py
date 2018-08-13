@@ -1,11 +1,23 @@
 from django.contrib import admin
 from .models import *
 
+from django_object_actions import DjangoObjectActions # https://github.com/crccheck/django-object-actions
+
 
 @admin.register(Tournament)
-class TournamentAdmin(admin.ModelAdmin):
+class TournamentAdmin(DjangoObjectActions, admin.ModelAdmin):
     list_display = ('name', 'creation_time', 'num_rounds', 'bye_score')
     search_fields = ('name',)
+    
+    def create_round(self, request, obj):
+        obj.create_round()
+        self.message_user(request, "New round created.")
+    
+    create_round.label = "Create round"
+    create_round.short_description = "Generate a new round with matches"
+
+    change_actions = ('create_round',)
+
 
 
 
@@ -42,6 +54,7 @@ class TableAdmin(admin.ModelAdmin):
 @admin.register(Round)
 class RoundAdmin(admin.ModelAdmin):
     list_display = ('__str__', 'tournament', 'num_matches', 'scheduled_time', 'team_scoreboard')
+    list_display_links = ('tournament',)
 
 
 

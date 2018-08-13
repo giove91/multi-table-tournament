@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'django_object_actions', # https://github.com/crccheck/django-object-actions
     'tournament.apps.TournamentConfig',
     'django.contrib.admin',
     'django.contrib.auth',
