@@ -41,7 +41,7 @@ class TableAdmin(admin.ModelAdmin):
 
 @admin.register(Round)
 class RoundAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'scheduled_time',)
+    list_display = ('__str__', 'tournament', 'num_matches', 'scheduled_time', 'team_scoreboard')
 
 
 
@@ -60,7 +60,7 @@ class PlayerResultInline(admin.TabularInline):
 class MatchAdmin(admin.ModelAdmin):
     inlines = (TeamResultInline, PlayerResultInline)
     list_display = ('__str__', 'round', 'type', 'table', 'team_score_counter')
-    list_filter = ('round', 'table',)
+    list_filter = ('round', 'table', 'type')
     autocomplete_fields = ('players',)
 
 

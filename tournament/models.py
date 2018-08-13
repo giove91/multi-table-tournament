@@ -1,5 +1,6 @@
 import networkx as nx
 import itertools
+import random
 from collections import Counter
 from decimal import Decimal
 
@@ -27,9 +28,34 @@ class Score:
     def __repr__(self):
         return "(%r, %r)" % (self.primary, self.secondary)
     
+    
+    def __eq__(self, other):
+        return self.primary == other.primary and self.secondary == other.secondary
+    
     def __le__(self, other):
         return self.primary < other.primary or self.primary == other.primary and self.secondary <= other.secondary
     
+    def __gt__(self, other):
+        if other is 0:
+            return self != Score()
+        else:
+            return not self <= other
+    
+    def __hash__(self):
+        return hash((self.primary, self.secondary))
+    
+    def __add__(self, other):
+        if other is 0:
+            return self
+        else:
+            return Score(self.primary + other.primary, self.secondary + other.secondary, self.num_matches + other.num_matches)
+    
+    def __radd__(self, other):
+        if other is 0:
+            return self
+        else:
+            return self + other
+
     def to_int(self):
         """
         Integer representation of the score, used in round creation.
@@ -38,14 +64,6 @@ class Score:
         return int(10*(100 * self.primary + self.secondary))
     
     
-    def __add__(self, other):
-        return Score(self.primary + other.primary, self.secondary + other.secondary, self.num_matches + other.num_matches)
-    
-    def __radd__(self, other):
-        if other is 0:
-            return self
-        else:
-            return self + other
 
 
 class Tournament(models.Model):
@@ -60,6 +78,10 @@ class Tournament(models.Model):
         return Round.objects.filter(tournament=self).count()
     
     
+    def team_scoreboard(self, fill_results=False):
+        return sum((match.team_score_counter(fill_results=fill_results) for match in Match.objects.filter(round__tournament=self)), Counter({team: Score() for team in Team.objects.filter(active=True)}))
+    
+    
     def create_round(self):
         """
         Create a new round for this tournament.
@@ -69,29 +91,129 @@ class Tournament(models.Model):
         # rounds = Round.objects.filter(tournament=self)
         matches = Match.objects.filter(round__tournament=self)
         
-        BYE = 'BYE'
-        
         previous_pairs = set(match.team_pair() for match in matches)
         previous_byes = set(match.team_bye() for match in matches)
+
+        previous_tables = {table: set() for table in tables}
+        for match in matches:
+            if match.table is not None:
+                for team in match.teams.all():
+                    previous_tables[match.table].add(team)
         
-        # pair teams
+        ### pair teams ###
+        if self.num_rounds() == 0:
+            # random pairings
+            team_queue = list(teams)
+            random.shuffle(team_queue)
+            pairs = []
+            while len(team_queue) > 1:
+                pairs.append((team_queue.pop(), team_queue.pop()))
+            if len(team_queue) == 1:
+                pairs.append((team_queue.pop(),))
+            
+        else:
+            G = nx.Graph()
+            G.add_nodes_from(teams)
+            
+            # analyze scoreboard
+            scoreboard = self.team_scoreboard(fill_results=True) # pending results are considered as full victories for all teams
+            print("Scoreboard")
+            print(scoreboard)
+            
+            clusters = {} # clusters of teams with the same score
+            for team in teams:
+                score = scoreboard[team].to_int() # this is an integer score
+                if score not in clusters:
+                    clusters[score] = []
+                clusters[score].append(team)
+            
+            print(clusters)
+            
+            M = len(teams) * (max(clusters) - min(clusters)) + 1 # some big constant
+            print("M = %d" % M)
+            
+            score_to_pos = {}
+            pos = 0
+            for score in sorted(clusters):
+                score_to_pos[score] = pos
+                pos += 1
+            
+            print(score_to_pos)
+            
+            for pair in itertools.combinations(teams, 2):
+                if pair not in previous_pairs:
+                    # create edge between teams
+                    scores = tuple(scoreboard[team].to_int() for team in pair)
+                    weight = - (max(scores) - min(scores)) * M ** score_to_pos[max(scores)]
+                    G.add_edge(*pair, weight=weight)
+
+            if len(teams) % 2 == 1:
+                # add bye
+                G.add_node(BYE)
+                
+                for team in teams:
+                    if team not in previous_byes:
+                        # create bye edge
+                        score = scoreboard[team].to_int()
+                        weight = - score * M ** pos
+                        G.add_edge(team, BYE, weight=weight)
+
+            # compute matching
+            matching = nx.max_weight_matching(G, maxcardinality=True)
+            pairs = list((a, b) if a != BYE and b != BYE else (a,) if b == BYE else (b,) for (a, b) in matching)
+        
+        print(pairs)
+        
+        ### assign tables ###
         G = nx.Graph()
-        G.add_nodes_from(teams)
+        G.add_nodes_from([pair for pair in pairs if len(pair) == 2])
+        G.add_nodes_from(tables)
         
-        # TODO: set correct weights based on the scoreboard
+        for table in tables:
+            for pair in pairs:
+                if len(pair) == 2:
+                    weight = table.priority # an integer between 0 and 100
+                    
+                    if any(team in previous_tables[table] for team in pair):
+                        # penalize this table
+                        weight -= 1000
+                    
+                    # create edge
+                    G.add_edge(pair, table, weight=weight)
         
-        for pair in itertools.combinations(teams, 2):
-            if pair not in previous_pairs:
-                G.add_edge(*pair, weight=1)
-
-        if len(teams) % 2 == 1:
-            # add bye
-            G.add_node(BYE)
-            G.add_weighted_edges_from((team, BYE, 1) for team in teams if team not in previous_byes)
-
+        # compute matching
+        matching = nx.max_weight_matching(G, maxcardinality=True)
         
-        print(G.edges(data=True))
-
+        pairs_to_tables = {}
+        for edge in matching:
+            print(edge)
+            if isinstance(edge[0], Table):
+                edge = reversed(edge)
+            
+            pair, table = edge
+            pairs_to_tables[pair] = table
+        
+        ### create new round ###
+        if self.num_rounds() > 0:
+            round_number = Round.objects.latest().number + 1
+        else:
+            round_number = 1
+        
+        round = Round.objects.create(number=round_number, tournament=self)
+        
+        for pair in pairs:
+            match = Match.objects.create(
+                round=round,
+                type=(NORMAL if len(pair)==2 else BYE),
+                table=(pairs_to_tables[pair] if pair in pairs_to_tables else None)
+            )
+            
+            for team in pair:
+                TeamResult.objects.create(match=match, team=team)
+                
+                for player in team.player_set.all():
+                    PlayerResult.objects.create(match=match, player=player)
+    
     
     class Meta:
         ordering = ['creation_time']
@@ -125,7 +247,8 @@ class Player(models.Model):
         return '%s (%s)' % (self.name, self.team.name)
     
     class Meta:
-        order_with_respect_to = 'team'
+        ordering = ['team', 'name']
+        # order_with_respect_to = 'team'
 
 
 
@@ -152,6 +275,13 @@ class Round(models.Model):
     def __str__(self):
         return 'Round %d' % self.number
     
+    def num_matches(self):
+        return self.match_set.all().count()
+    
+    def team_scoreboard(self, fill_results=False):
+        return sum((match.team_score_counter(fill_results=fill_results) for match in Match.objects.filter(round=self)), Counter({team: Score() for team in Team.objects.filter(active=True)}))
+    
+    
     class Meta:
         ordering = ['number']
         get_latest_by = 'number'
@@ -177,7 +307,7 @@ class Match(models.Model):
         Return None if this match was a Bye.
         """
         if self.type == NORMAL:
-            return self.teams.all().order_by('pk')
+            return tuple(self.teams.all().order_by('pk'))
         else:
             return None
     
