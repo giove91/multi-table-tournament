@@ -17,7 +17,32 @@
 <div class="container my-4">
 <h1>{{ tournament.name }}</h1>
 
+<h2 class="my-4">Classifica squadre</h2>
 
+<div class="table-responsive">
+<table class="table table-striped">
+<thead>
+    <tr>
+    <th scope="col" class="text-center">#</th>
+    <th scope="col">Squadra</th>
+    <th scope="col" class="text-center">Vittorie</th>
+    <th scope="col" class="text-center">Punti</th>
+    <th scope="col" class="text-center">Partite</th>
+    </tr>
+</thead>
+<tbody>
+{% for team, score, rank in team_scoreboard %}
+    <tr>
+        <th scope="row" class="text-center">{{ rank }}</th>
+        <td>{{ team }}</td>
+        <td class="text-center">{{ score.primary }}</td>
+        <td class="text-center">{{ score.secondary }}</td>
+        <td class="text-center">{{ score.num_matches }}</td>
+    </tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
 
 </div>
 
