@@ -54,6 +54,7 @@
     <tr>
     <th scope="col" class="text-center">#</th>
     <th scope="col">Giocatore</th>
+    <th scope="col">Squadra</th>
     <th scope="col" class="text-center">Punti</th>
     <th scope="col" class="text-center">Partite</th>
     </tr>
@@ -62,7 +63,8 @@
 {% for player, score, rank in player_scoreboard %}
     <tr>
         <th scope="row" class="text-center">{{ rank }}</th>
-        <td>{{ player }}</td>
+        <td>{{ player.name }}</td>
+        <td>{{ player.team.name }}</td>
         <td class="text-center">{{ score.primary }}</td>
         <td class="text-center">{{ score.num_matches }}</td>
     </tr>
