@@ -102,7 +102,6 @@ class Tournament(models.Model):
         """
         teams = Team.objects.filter(active=True).order_by('pk')
         tables = Table.objects.all()
-        # rounds = Round.objects.filter(tournament=self)
         matches = Match.objects.filter(round__tournament=self)
         
         previous_pairs = set(match.team_pair() for match in matches)
