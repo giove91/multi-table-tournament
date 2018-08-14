@@ -33,7 +33,8 @@ class IndexView(TemplateView):
         
         context = super().get_context_data(**kwargs)
         context['tournament'] = tournament
-        
         context['team_scoreboard'] = sorted_scoreboard(tournament.team_scoreboard())
+        context['player_scoreboard'] = sorted_scoreboard(tournament.player_scoreboard())
+        context['rounds'] = tournament.round_set.all().order_by('-number')
         return context
 

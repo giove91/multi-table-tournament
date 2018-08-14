@@ -303,6 +303,8 @@ class Round(models.Model):
     def team_scoreboard(self, fill_results=False):
         return sum((match.team_scoreboard(fill_results=fill_results) for match in Match.objects.filter(round=self)), Counter({team: Score() for team in Team.objects.filter(active=True)}))
     
+    def normal_matches(self):
+        return self.match_set.filter(type=NORMAL)
     
     class Meta:
         ordering = ['number']
@@ -391,12 +393,12 @@ class Match(models.Model):
     def player_scoreboard(self):
         if self.type == BYE:
             return Counter({
-                player_result.player: Score(Decimal('1.0'), match_type=BYE) for player_result in self.playerresult_set.all()
+                player_result.player: Score(Decimal('1.0'), num_matches=1, match_type=BYE) for player_result in self.playerresult_set.all()
             })
         
         else:
             return Counter({
-                player_result.player: Score(player_result.score if player_result.score is not None else Decimal('0.0'), match_type=NORMAL) for player_result in self.playerresult_set.all()
+                player_result.player: Score(player_result.score if player_result.score is not None else Decimal('0.0'), num_matches=1, match_type=NORMAL) for player_result in self.playerresult_set.all()
             })
     
     

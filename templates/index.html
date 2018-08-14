@@ -17,7 +17,8 @@
 <div class="container my-4">
 <h1>{{ tournament.name }}</h1>
 
-<h2 class="my-4">Classifica squadre</h2>
+
+<h3 class="my-4">Classifica squadre</h3>
 
 <div class="table-responsive">
 <table class="table table-striped">
@@ -43,6 +44,62 @@
 </tbody>
 </table>
 </div>
+
+
+<h3 class="my-4">Classifica individuale</h3>
+
+<div class="table-responsive">
+<table class="table table-striped">
+<thead>
+    <tr>
+    <th scope="col" class="text-center">#</th>
+    <th scope="col">Giocatore</th>
+    <th scope="col" class="text-center">Punti</th>
+    <th scope="col" class="text-center">Partite</th>
+    </tr>
+</thead>
+<tbody>
+{% for player, score, rank in player_scoreboard %}
+    <tr>
+        <th scope="row" class="text-center">{{ rank }}</th>
+        <td>{{ player }}</td>
+        <td class="text-center">{{ score.primary }}</td>
+        <td class="text-center">{{ score.num_matches }}</td>
+    </tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+
+
+
+{% for round in rounds %}
+
+<h3 class="my-4">{{ round }}</h3>
+
+<div class="table-responsive">
+<table class="table table-striped">
+<thead>
+    <tr>
+    <th scope="col" style="width: 50%">Partita</th>
+    <th scope="col" style="width: 30%">Tavolo</th>
+    <th scope="col" style="width: 20%" class="text-center">Risultato</th>
+    </tr>
+</thead>
+<tbody>
+{% for match in round.normal_matches %}
+    <tr>
+        <td>{{ match }}</td>
+        <td>{{ match.table|default_if_none:"-" }}</td>
+        <td class="text-center">{{ match.result|default_if_none:"-" }}</td>
+    </tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+
+{% endfor %}
+
 
 </div>
 
