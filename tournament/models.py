@@ -18,7 +18,7 @@ class Score:
     It also keeps track of the number of matches and (in the case of one match)
     of the type of match (normal/bye).
     """
-    def __init__(self, primary=0, secondary=0, num_matches=0, match_type=None):
+    def __init__(self, primary=Decimal('0.0'), secondary=Decimal('0.0'), num_matches=0, match_type=None):
         self.primary = primary
         self.secondary = secondary
         self.num_matches = num_matches
@@ -63,7 +63,12 @@ class Score:
         """
         return int(10*(100 * self.primary + self.secondary))
     
-    
+
+def score_counter_to_str(counter):
+    """
+    Transform a counter of scores into a string, for display purposes.
+    """
+    return ', '.join('%s (%s, %s)' % (entity.name, str(score.primary), str(score.secondary)) for (entity, score) in reversed(sorted(counter.items(), key=lambda x: x[1])))
 
 
 class Tournament(models.Model):
@@ -79,7 +84,7 @@ class Tournament(models.Model):
     
     
     def team_scoreboard(self, fill_results=False):
-        return sum((match.team_score_counter(fill_results=fill_results) for match in Match.objects.filter(round__tournament=self)), Counter({team: Score() for team in Team.objects.filter(active=True)}))
+        return sum((match.team_scoreboard(fill_results=fill_results) for match in Match.objects.filter(round__tournament=self)), Counter({team: Score() for team in Team.objects.filter(active=True)}))
     
     
     def create_round(self):
@@ -284,8 +289,11 @@ class Round(models.Model):
     def num_matches(self):
         return self.match_set.all().count()
     
+    def completed_matches(self):
+        return sum(1 for match in self.match_set.all() if match.type == BYE or all(team_result.score is not None for team_result in match.teamresult_set.all()))
+    
     def team_scoreboard(self, fill_results=False):
-        return sum((match.team_score_counter(fill_results=fill_results) for match in Match.objects.filter(round=self)), Counter({team: Score() for team in Team.objects.filter(active=True)}))
+        return sum((match.team_scoreboard(fill_results=fill_results) for match in Match.objects.filter(round=self)), Counter({team: Score() for team in Team.objects.filter(active=True)}))
     
     
     class Meta:
@@ -304,7 +312,13 @@ class Match(models.Model):
     players = models.ManyToManyField(Player, through='PlayerResult')
     
     def __str__(self):
-        return ' - '.join(team.name for team in self.teams.all()) if self.teams.count() > 0 else 'Empty match'
+        num_teams = self.teams.count()
+        if num_teams == 0:
+            return 'Empty match'
+        elif num_teams == 1:
+            return '%s (Bye)' % self.teams.get().name
+        else:
+            return ' - '.join(team.name for team in self.teams.all())
     
     
     def team_pair(self):
@@ -325,13 +339,19 @@ class Match(models.Model):
         return self.teams.get() if self.type == BYE else None
     
     
-    def team_score_counter(self, fill_results=False):
+    def result(self):
+        if self.teams.count() < 2 or any(team_result.score is None for team_result in self.teamresult_set.all()):
+            return None
+        else:
+            return ' - '.join(str(team_result.score) for team_result in self.teamresult_set.all())
+    
+    def team_scoreboard(self, fill_results=False):
         """
         Return a Counter with the scores of this match.
         """
         if self.type == BYE:
             return Counter({
-                team_result.team: Score(1, self.round.tournament.bye_score, 1, BYE) for team_result in self.teamresult_set.all()
+                team_result.team: Score(Decimal('1.0'), self.round.tournament.bye_score, 1, BYE) for team_result in self.teamresult_set.all()
             })
         
         elif any(team_result.score is None for team_result in self.teamresult_set.all()):
@@ -339,7 +359,7 @@ class Match(models.Model):
             if fill_results:
                 # treat all results as victories
                 return Counter({
-                    team_result.team: Score(1, self.round.tournament.bye_score, 1, NORMAL) for team_result in self.teamresult_set.all()
+                    team_result.team: Score(Decimal('1.0'), self.round.tournament.bye_score, 1, NORMAL) for team_result in self.teamresult_set.all()
                 })
             
             else:
@@ -356,7 +376,7 @@ class Match(models.Model):
             else:
                 # victory for one team
                 return Counter({
-                    team_result.team: Score(1 if team_result.score == max(scores) else 0, team_result.score, 1, NORMAL) for team_result in self.teamresult_set.all()
+                    team_result.team: Score(Decimal('1.0') if team_result.score == max(scores) else Decimal('0.0'), team_result.score, 1, NORMAL) for team_result in self.teamresult_set.all()
                 })
     
     

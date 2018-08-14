@@ -6,7 +6,7 @@ from django_object_actions import DjangoObjectActions # https://github.com/crcch
 
 @admin.register(Tournament)
 class TournamentAdmin(DjangoObjectActions, admin.ModelAdmin):
-    list_display = ('name', 'creation_time', 'num_rounds', 'bye_score')
+    list_display = ('name', 'creation_time', 'bye_score', 'num_rounds', 'team_scores')
     search_fields = ('name',)
     
     def create_round(self, request, obj):
@@ -20,6 +20,9 @@ class TournamentAdmin(DjangoObjectActions, admin.ModelAdmin):
     create_round.short_description = "Generate a new round with matches"
 
     change_actions = ('create_round',)
+    
+    def team_scores(self, obj):
+        return score_counter_to_str(obj.team_scoreboard())
 
 
 
@@ -56,8 +59,10 @@ class TableAdmin(admin.ModelAdmin):
 
 @admin.register(Round)
 class RoundAdmin(admin.ModelAdmin):
-    list_display = ('__str__', 'tournament', 'num_matches', 'scheduled_time', 'team_scoreboard')
-
+    list_display = ('__str__', 'tournament', 'num_matches', 'completed_matches', 'scheduled_time', 'team_scores')
+    
+    def team_scores(self, obj):
+        return score_counter_to_str(obj.team_scoreboard())
 
 
 class TeamResultInline(admin.TabularInline):
@@ -76,8 +81,10 @@ class PlayerResultInline(admin.TabularInline):
 @admin.register(Match)
 class MatchAdmin(admin.ModelAdmin):
     inlines = (TeamResultInline, PlayerResultInline)
-    list_display = ('__str__', 'round', 'type', 'table', 'team_score_counter')
+    list_display = ('__str__', 'round', 'type', 'table', 'result', 'team_scores')
     list_filter = ('round', 'table', 'type')
-    autocomplete_fields = ('players',)
+    
+    def team_scores(self, obj):
+        return score_counter_to_str(obj.team_scoreboard())
 
 
