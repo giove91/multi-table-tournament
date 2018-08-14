@@ -6,7 +6,7 @@ from django_object_actions import DjangoObjectActions # https://github.com/crcch
 
 @admin.register(Tournament)
 class TournamentAdmin(DjangoObjectActions, admin.ModelAdmin):
-    list_display = ('name', 'creation_time', 'bye_score', 'num_rounds', 'team_scores')
+    list_display = ('name', 'creation_time', 'bye_score', 'num_rounds', 'team_scores', 'player_scores')
     search_fields = ('name',)
     
     def create_round(self, request, obj):
@@ -23,6 +23,9 @@ class TournamentAdmin(DjangoObjectActions, admin.ModelAdmin):
     
     def team_scores(self, obj):
         return score_counter_to_str(obj.team_scoreboard())
+    
+    def player_scores(self, obj):
+        return score_counter_to_str(obj.player_scoreboard(), hide_secondary=True)
 
 
 
@@ -81,10 +84,13 @@ class PlayerResultInline(admin.TabularInline):
 @admin.register(Match)
 class MatchAdmin(admin.ModelAdmin):
     inlines = (TeamResultInline, PlayerResultInline)
-    list_display = ('__str__', 'round', 'type', 'table', 'result', 'team_scores')
+    list_display = ('__str__', 'round', 'type', 'table', 'result', 'team_scores', 'player_scores')
     list_filter = ('round', 'table', 'type')
     
     def team_scores(self, obj):
         return score_counter_to_str(obj.team_scoreboard())
+
+    def player_scores(self, obj):
+        return score_counter_to_str(obj.player_scoreboard(), hide_secondary=True)
 
 

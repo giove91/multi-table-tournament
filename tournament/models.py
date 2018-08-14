@@ -64,11 +64,17 @@ class Score:
         return int(10*(100 * self.primary + self.secondary))
     
 
-def score_counter_to_str(counter):
+
+def score_counter_to_str(counter, hide_secondary=False):
     """
     Transform a counter of scores into a string, for display purposes.
     """
-    return ', '.join('%s (%s, %s)' % (entity.name, str(score.primary), str(score.secondary)) for (entity, score) in reversed(sorted(counter.items(), key=lambda x: x[1])))
+    if hide_secondary:
+        return ', '.join('%s (%s)' % (entity.name, str(score.primary)) for (entity, score) in reversed(sorted(counter.items(), key=lambda x: x[1])))
+
+    else:
+        return ', '.join('%s (%s, %s)' % (entity.name, str(score.primary), str(score.secondary)) for (entity, score) in reversed(sorted(counter.items(), key=lambda x: x[1])))
+
 
 
 class Tournament(models.Model):
@@ -85,6 +91,9 @@ class Tournament(models.Model):
     
     def team_scoreboard(self, fill_results=False):
         return sum((match.team_scoreboard(fill_results=fill_results) for match in Match.objects.filter(round__tournament=self)), Counter({team: Score() for team in Team.objects.filter(active=True)}))
+    
+    def player_scoreboard(self):
+        return sum((match.player_scoreboard() for match in Match.objects.filter(round__tournament=self)), Counter({player: Score() for player in Player.objects.filter(team__active=True)}))
     
     
     def create_round(self):
@@ -378,6 +387,18 @@ class Match(models.Model):
                 return Counter({
                     team_result.team: Score(Decimal('1.0') if team_result.score == max(scores) else Decimal('0.0'), team_result.score, 1, NORMAL) for team_result in self.teamresult_set.all()
                 })
+    
+    
+    def player_scoreboard(self):
+        if self.type == BYE:
+            return Counter({
+                player_result.player: Score(Decimal('1.0'), match_type=BYE) for player_result in self.playerresult_set.all()
+            })
+        
+        else:
+            return Counter({
+                player_result.player: Score(player_result.score if player_result.score is not None else Decimal('0.0'), match_type=NORMAL) for player_result in self.playerresult_set.all()
+            })
     
     
     class Meta:
