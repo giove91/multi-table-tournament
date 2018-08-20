@@ -1,6 +1,7 @@
 from django.contrib import admin, messages
 from django.utils.html import format_html
 from django.urls import reverse
+from django.http import HttpResponseRedirect
 
 from django_object_actions import DjangoObjectActions # https://github.com/crccheck/django-object-actions
 
@@ -73,11 +74,20 @@ class TableAdmin(admin.ModelAdmin):
 
 
 @admin.register(Round)
-class RoundAdmin(admin.ModelAdmin):
+class RoundAdmin(DjangoObjectActions, admin.ModelAdmin):
     list_display = ('__str__', 'tournament', 'num_matches', 'completed_matches', 'scheduled_time', 'team_scores')
+    
+    def view_matches(self, request, obj):
+        return HttpResponseRedirect(reverse('admin:tournament_match_changelist') + '?round__id__exact=%d' % obj.id)
+    
+    view_matches.label = "View matches"
+    view_matches.short_description = "View list of matches of this round"
+
+    change_actions = ('view_matches',)
     
     def team_scores(self, obj):
         return score_counter_to_str(obj.team_scoreboard())
+    
 
 
 class TeamResultInline(admin.TabularInline):
