@@ -6,6 +6,9 @@ from decimal import Decimal
 
 from django.db import models
 from django.core.validators import RegexValidator
+from django.core.exceptions import ValidationError
+
+from django.utils.translation import gettext_lazy as _
 
 NORMAL = 'N'
 BYE = 'B'
@@ -276,9 +279,17 @@ class Player(models.Model):
 
 
 
+def validate_priority(value):
+    if not 0 <= value <= 100:
+        raise ValidationError(
+            _('%(value)s is not between 0 and 100'),
+            params={'value': value},
+        )
+
+
 class Table(models.Model):
     name = models.CharField(max_length=256)
-    priority = models.IntegerField(default=100, help_text='Tables with higher priority are preferred when creating a new turn.')
+    priority = models.IntegerField(default=100, validators=[validate_priority], help_text='A number between 0 and 100. Tables with higher priority are preferred when creating a new turn.')
     
 
     def __str__(self):
