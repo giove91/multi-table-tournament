@@ -1,7 +1,11 @@
 from django.contrib import admin, messages
-from .models import *
+from django.utils.html import format_html
+from django.urls import reverse
 
 from django_object_actions import DjangoObjectActions # https://github.com/crccheck/django-object-actions
+
+from .models import *
+
 
 
 @admin.register(Tournament)
@@ -10,11 +14,19 @@ class TournamentAdmin(DjangoObjectActions, admin.ModelAdmin):
     search_fields = ('name',)
     
     def create_round(self, request, obj):
-        round_number, success = obj.create_round()
+        round, success = obj.create_round()
         if not success:
-            self.message_user(request, "Round %d created, but not all teams could be paired." % round_number, level=messages.WARNING)
+            self.message_user(
+                request,
+                format_html('<a href="%s">Round %d</a> created, but not all teams could be paired.' % (reverse('admin:tournament_round_change', args=(round.id,)), round.number)),
+                level=messages.WARNING
+            )
         else:
-            self.message_user(request, "Round %d created." % round_number, level=messages.SUCCESS)
+            self.message_user(
+                request,
+                format_html('<a href="%s">Round %d</a> created.' % (reverse('admin:tournament_round_change', args=(round.id,)), round.number)),
+                level=messages.SUCCESS
+            )
     
     create_round.label = "Create round"
     create_round.short_description = "Generate a new round with matches"
