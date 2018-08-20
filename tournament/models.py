@@ -33,10 +33,10 @@ class Score:
     
     
     def __eq__(self, other):
-        return self.primary == other.primary and self.secondary == other.secondary
+        return self.primary == other.primary and self.secondary == other.secondary and self.num_matches == other.num_matches
     
     def __le__(self, other):
-        return self.primary < other.primary or self.primary == other.primary and self.secondary <= other.secondary
+        return self.primary < other.primary or self.primary == other.primary and (self.secondary < other.secondary or self.secondary == other.secondary and self.num_matches >= other.num_matches)
     
     def __gt__(self, other):
         if other is 0:
@@ -320,7 +320,11 @@ class Round(models.Model):
         return sum(1 for match in self.match_set.all() if match.type == BYE or all(team_result.score is not None for team_result in match.teamresult_set.all()))
     
     def team_scoreboard(self, fill_results=False):
-        return sum((match.team_scoreboard(fill_results=fill_results) for match in Match.objects.filter(round=self)), Counter({team: Score() for team in Team.objects.filter(active=True)}))
+        res = sum((match.team_scoreboard(fill_results=fill_results) for match in Match.objects.filter(round=self)), Counter())
+        for team in Team.objects.filter(active=True):
+            if team not in res:
+                res[team] = Score()
+        return res
     
     def normal_matches(self):
         return self.match_set.filter(type=NORMAL)
