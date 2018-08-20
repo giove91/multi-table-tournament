@@ -90,10 +90,18 @@ class Tournament(models.Model):
     
     
     def team_scoreboard(self, fill_results=False):
-        return sum((match.team_scoreboard(fill_results=fill_results) for match in Match.objects.filter(round__tournament=self)), Counter({team: Score() for team in Team.objects.filter(active=True)}))
+        res = sum((match.team_scoreboard(fill_results=fill_results) for match in Match.objects.filter(round__tournament=self)), Counter())
+        for team in Team.objects.filter(active=True):
+            if team not in res:
+                res[team] = Score()
+        return res
     
     def player_scoreboard(self):
-        return sum((match.player_scoreboard() for match in Match.objects.filter(round__tournament=self)), Counter({player: Score() for player in Player.objects.filter(team__active=True)}))
+        res = sum((match.player_scoreboard() for match in Match.objects.filter(round__tournament=self)), Counter())
+        for player in Player.objects.filter(team__active=True):
+            if player not in res:
+                res[player] = Score()
+        return res
     
     
     def create_round(self):
