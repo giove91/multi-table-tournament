@@ -115,6 +115,13 @@ USE_L10N = True
 
 USE_TZ = True
 
+# Use custom settings for formatting numbers
+FORMAT_MODULE_PATH = [
+    'tournament.formats',
+]
+
+
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
