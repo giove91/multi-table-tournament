@@ -94,6 +94,9 @@ class TeamResultInline(admin.TabularInline):
     model = TeamResult
     verbose_name_plural = 'teams'
     autocomplete_fields = ('team',)
+    # TODO: limit teams to those that are not already in a match
+    # (Django 2.1 does not support this together with autocomplete_fields)
+    
     max_num = 2
     extra = 2
 

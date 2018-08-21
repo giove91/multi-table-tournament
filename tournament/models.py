@@ -28,8 +28,12 @@ class Score:
         self.match_type = match_type
     
     
+    def raw(self):
+        return (self.primary, self.secondary)
+    
+    
     def __repr__(self):
-        return "(%r, %r)" % (self.primary, self.secondary)
+        return self.raw().__repr__()
     
     
     def __eq__(self, other):
@@ -327,7 +331,7 @@ class Round(models.Model):
         return res
     
     def normal_matches(self):
-        return self.match_set.filter(type=NORMAL)
+        return [match for match in self.match_set.filter(type=NORMAL) if match.valid()]
     
     class Meta:
         ordering = ['number']

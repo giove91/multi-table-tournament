@@ -9,9 +9,9 @@ def sorted_scoreboard(scoreboard):
     """
     by_score = {}
     for (entity, score) in scoreboard.items():
-        if score not in by_score:
-            by_score[score] = []
-        by_score[score].append(entity)
+        if score.raw() not in by_score:
+            by_score[score.raw()] = []
+        by_score[score.raw()].append(entity)
     
     res = []
     rank = 1
