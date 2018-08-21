@@ -399,7 +399,7 @@ class Match(models.Model):
                 team_result.team: Score(Decimal('1.0'), self.round.tournament.bye_score, 1, BYE) for team_result in self.teamresult_set.all()
             })
         
-        elif any(team_result.score is None for team_result in self.teamresult_set.all()):
+        elif not self.valid() or any(team_result.score is None for team_result in self.teamresult_set.all()):
             # this match is not completed
             if fill_results:
                 # treat all results as victories
