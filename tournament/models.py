@@ -348,11 +348,19 @@ class Match(models.Model):
         num_teams = self.teams.count()
         if num_teams == 0:
             return 'Empty match'
-        elif num_teams == 1:
+        elif num_teams == 1 and self.type == BYE:
             return '%s (Bye)' % self.teams.get().name
         else:
             return ' - '.join(team.name for team in self.teams.all())
     
+    
+    def valid(self):
+        """
+        Check that there are exactly two teams, or one team in the case of a bye.
+        """
+        num_teams = self.teams.count()
+        return num_teams == 1 and self.type == BYE or num_teams == 2 and self.type == NORMAL
+    valid.boolean = True
     
     def team_pair(self):
         """
@@ -435,6 +443,20 @@ class TeamResult(models.Model):
     team = models.ForeignKey(Team, on_delete=models.CASCADE)
     score = models.DecimalField(max_digits=4, decimal_places=1, blank=True, null=True, default=None)
     
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)  # call the "real" save() method.
+        
+        # create PlayerResult objects if they do not exist
+        if PlayerResult.objects.filter(match=self.match, player__team=self.team).count() == 0:
+            for player in self.team.player_set.all():
+                PlayerResult.objects.create(match=self.match, player=player)
+    
+    def delete(self, *args, **kwargs):
+        super().delete(*args, **kwargs)  # call the "real" delete() method.
+        
+        # delete PlayerResult objects
+        PlayerResult.objects.filter(match=self.match, player__team=self.team).delete()
+    
     class Meta:
         ordering = ['match', 'team']
 
@@ -446,5 +468,4 @@ class PlayerResult(models.Model):
     
     class Meta:
         ordering = ['match', 'player']
-
 

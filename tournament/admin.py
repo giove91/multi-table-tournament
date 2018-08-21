@@ -102,12 +102,17 @@ class PlayerResultInline(admin.TabularInline):
     verbose_name_plural = 'players'
     autocomplete_fields = ('player',)
     extra = 0
+    can_delete = False
 
 @admin.register(Match)
 class MatchAdmin(admin.ModelAdmin):
     inlines = (TeamResultInline, PlayerResultInline)
-    list_display = ('__str__', 'round', 'type', 'table', 'result', 'team_scores', 'player_scores')
+    list_display = ('__str__', 'show_round', 'type', 'valid', 'table', 'result', 'team_scores', 'player_scores')
     list_filter = ('round', 'table', 'type')
+    
+    def show_round(self, obj):
+        return format_html("<a href='{url}'>{round}</a>", url=reverse('admin:tournament_round_change', args=(obj.round.id,)), round=obj.round)
+    show_round.short_description = "round"
     
     def team_scores(self, obj):
         return score_counter_to_str(obj.team_scoreboard())
