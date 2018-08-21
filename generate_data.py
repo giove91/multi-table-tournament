@@ -8,7 +8,7 @@ import random
 
 TEAM_NAMES = ['Alpha', 'Beta', 'Gamma', 'Delta', 'Epsilon', 'Zeta', 'Eta', 'Theta', 'Iota', 'Kappa', 'Lambda', 'Mu', 'Nu', 'Xi']
 
-TABLE_NAMES = ['Astratti', 'Europei', 'Africani', 'Asiatici', 'Traguardo', 'Connessione', 'Scacchi', 'Dama', 'Atipici', 'Classici']
+TABLE_NAMES = ['Astratti', 'Europei', 'Africani', 'Asiatici', 'Traguardo', 'Connessione', 'Scacchi', 'Dama', 'Atipici', 'Classici', 'Allineamento', 'Gigamic', 'Neoclassici']
 
 
 if __name__ == '__main__':

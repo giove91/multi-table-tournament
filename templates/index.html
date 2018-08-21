@@ -81,7 +81,7 @@
 {% for round in rounds %}
 
 <h3 class="my-4">Turno {{ round.number }}{% if round.scheduled_time %}
-<small class="text-muted">({{ round.scheduled_time|date:"l G:i" }})</small>{% endif %}</h3>
+<small class="text-muted">({{ round.scheduled_time|date:"l" }} alle {{ round.scheduled_time|date:"G:i" }})</small>{% endif %}</h3>
 
 <div class="table-responsive">
 <table class="table table-striped">
