@@ -11,5 +11,5 @@ if __name__ == '__main__':
     from tournament.models import *
     
     tournament = Tournament.objects.latest()
-    print(tournament)
+    print("Tournament:", tournament)
     tournament.create_round()

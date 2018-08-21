@@ -20,7 +20,7 @@ if __name__ == '__main__':
     from tournament.models import *
     
     tournament = Tournament.objects.latest()
-    print(tournament)
+    print("Tournament:", tournament)
     
     for match in Match.objects.filter(round__tournament=tournament):
         if len(match.team_scoreboard()) == 0 and match.teams.count() == 2:
