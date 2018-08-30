@@ -23,7 +23,7 @@ if __name__ == '__main__':
     print("Tournament:", tournament)
     
     for match in Match.objects.filter(round__tournament=tournament):
-        if len(match.team_scoreboard()) == 0 and match.teams.count() == 2:
+        if len(match.team_scoreboard()) == 0 and match.valid() and match.type == NORMAL:
             print(match)
             
             teams = list(match.teams.all())
