@@ -8,6 +8,7 @@ Web application to manage a Swiss-like tournament where matches are played at di
 * [Django 2.1.7](https://docs.djangoproject.com/en/2.1/)
 * [NetworkX 2.2](https://networkx.github.io)
 * [Django-object-actions 1.0.0](https://github.com/crccheck/django-object-actions)
+* [Names 0.3.0](https://pypi.org/project/names/)
 
 
 ## Local testing

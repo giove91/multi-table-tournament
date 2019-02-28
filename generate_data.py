@@ -14,9 +14,9 @@ TABLE_NAMES = ['Astratti', 'Europei', 'Africani', 'Asiatici', 'Traguardo', 'Conn
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Generate random teams, players, and tables.')
     
-    parser.add_argument('num_teams', type=int, help='number of teams')
-    parser.add_argument('num_players', type=int, help='number of players per team')
-    parser.add_argument('num_tables', type=int, help='number of tables')
+    parser.add_argument('num_teams', type=int, nargs='?', default=8, help='number of teams')
+    parser.add_argument('num_players', type=int, nargs='?', default=6, help='number of players per team')
+    parser.add_argument('num_tables', type=int, nargs='?', default=10, help='number of tables')
     
     args = parser.parse_args()
     

@@ -10,9 +10,9 @@ if __name__ == '__main__':
     
     from tournament.models import *
     
-    if len(sys.argv) < 2:
-        print("Error: specify the name of the tournament")
-        sys.exit()
+    parser = argparse.ArgumentParser(description='Create a new tournament.')
+    parser.add_argument('name', nargs='+', help='name of the tournament')
+    args = parser.parse_args()
     
-    tournament = Tournament.objects.create(name=' '.join(sys.argv[1:]))
-    print("Tournament:", tournament)
+    tournament = Tournament.objects.create(name=' '.join(args.name))
+    print("Created tournament:", tournament)
