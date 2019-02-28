@@ -29,12 +29,20 @@ class IndexView(TemplateView):
     template_name = "index.html"
 
     def get_context_data(self, **kwargs):
-        tournament = Tournament.objects.latest()
-        
         context = super().get_context_data(**kwargs)
+        
+        try:
+            tournament = Tournament.objects.latest()
+        
+        except Tournament.DoesNotExist:
+            tournament = None
+        
         context['tournament'] = tournament
-        context['team_scoreboard'] = sorted_scoreboard(tournament.team_scoreboard())
-        context['player_scoreboard'] = sorted_scoreboard(tournament.player_scoreboard())
-        context['rounds'] = tournament.round_set.all().order_by('-number')
+        
+        if tournament is not None:
+            context['team_scoreboard'] = sorted_scoreboard(tournament.team_scoreboard())
+            context['player_scoreboard'] = sorted_scoreboard(tournament.player_scoreboard())
+            context['rounds'] = tournament.round_set.all().order_by('-number')
+        
         return context
 
