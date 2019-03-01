@@ -11,7 +11,7 @@ from .models import *
 
 @admin.register(Tournament)
 class TournamentAdmin(DjangoObjectActions, admin.ModelAdmin):
-    list_display = ('name', 'creation_time', 'bye_score', 'num_rounds', 'team_scores', 'player_scores')
+    list_display = ('name', 'creation_time', 'bye_score', 'shown_players', 'num_rounds', 'team_scores', 'player_scores')
     search_fields = ('name',)
     
     def create_round(self, request, obj):

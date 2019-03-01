@@ -88,6 +88,7 @@ class Tournament(models.Model):
     name = models.CharField(max_length=1024)
     creation_time = models.DateTimeField(auto_now_add=True)
     bye_score = models.DecimalField(max_digits=4, decimal_places=1, default=3, help_text='Score to assign for a bye.')
+    shown_players = models.PositiveIntegerField(null=True, blank=True, default=10, help_text='Number of players to show in the scoreboard. If no value is given, all players are shown.')
     
     def __str__(self):
         return self.name
