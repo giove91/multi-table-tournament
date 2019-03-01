@@ -238,10 +238,10 @@ class Tournament(models.Model):
             
             for team in pair:
                 TeamResult.objects.create(match=match, team=team)
-                
+                """
                 for player in team.player_set.all():
                     PlayerResult.objects.create(match=match, player=player)
-        
+                """
         # return round number and success/warning
         return round, sum(len(pair) for pair in pairs) == len(teams)
     
