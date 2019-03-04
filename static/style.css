@@ -1,0 +1,5 @@
+.rchangelink, .inlinerchangelink {
+    padding-right: 16px;
+    background: url(admin/img/icon-changelink.svg) 0 1px no-repeat;
+    background-position: 100%;
+}

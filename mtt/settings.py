@@ -33,15 +33,19 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'tournament.apps.TournamentConfig',
     'django_object_actions', # https://github.com/crccheck/django-object-actions
-    'django.contrib.admin',
+    # 'django.contrib.admin',
+    # 'django.contrib.admin.apps.SimpleAdminConfig',
+    'mtt.apps.MTTAdminConfig',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'debug_toolbar',
 ]
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -49,6 +53,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'tournament.middleware.CurrentTournamentMiddleware',
 ]
 
 ROOT_URLCONF = 'mtt.urls'
@@ -64,6 +69,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'tournament.context_processors.context_processor',
             ],
         },
     },
@@ -127,3 +133,10 @@ FORMAT_MODULE_PATH = [
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
+
+
+INTERNAL_IPS = ['127.0.0.1']

@@ -31,12 +31,7 @@ class IndexView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
-        try:
-            tournament = Tournament.objects.latest()
-        
-        except Tournament.DoesNotExist:
-            tournament = None
-        
+        tournament = self.request.current_tournament
         context['tournament'] = tournament
         
         if tournament is not None:

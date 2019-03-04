@@ -2,14 +2,27 @@ from django.contrib import admin, messages
 from django.utils.html import format_html
 from django.urls import reverse
 from django.http import HttpResponseRedirect
+from django.contrib.admin import AdminSite
+from django.contrib.auth.models import User, Group
 
 from django_object_actions import DjangoObjectActions # https://github.com/crccheck/django-object-actions
 
 from .models import *
 
 
+class MTTAdminSite(AdminSite):
+    site_header = 'Multi-table tournament administration'
+    site_title = 'MTT admin'
+    index_template = 'admin_index.html'
+    # app_index_template = 'admin_app_index.html'
 
-@admin.register(Tournament)
+admin_site = MTTAdminSite(name='mttadmin')
+
+admin_site.register(User)
+admin_site.register(Group)
+
+
+@admin.register(Tournament, site=admin_site)
 class TournamentAdmin(DjangoObjectActions, admin.ModelAdmin):
     list_display = ('name', 'creation_time', 'bye_score', 'shown_players', 'num_rounds', 'team_scores', 'player_scores')
     search_fields = ('name',)
@@ -46,7 +59,7 @@ class TournamentAdmin(DjangoObjectActions, admin.ModelAdmin):
 class PlayerInline(admin.TabularInline):
     model = Player
 
-@admin.register(Team)
+@admin.register(Team, site=admin_site)
 class TeamAdmin(admin.ModelAdmin):
     inlines = (PlayerInline,)
     list_display = ('name', 'players')
@@ -56,7 +69,7 @@ class TeamAdmin(admin.ModelAdmin):
         return ", ".join(player.name for player in obj.player_set.all())
 
 
-@admin.register(Player)
+@admin.register(Player, site=admin_site)
 class PlayerAdmin(admin.ModelAdmin):
     list_display = ('name', 'team', 'phone_number', 'is_captain')
     # list_editable = ('team', 'phone_number', 'is_captain')
@@ -65,7 +78,7 @@ class PlayerAdmin(admin.ModelAdmin):
     autocomplete_fields = ('team',)
 
 
-@admin.register(Table)
+@admin.register(Table, site=admin_site)
 class TableAdmin(admin.ModelAdmin):
     list_display = ('name', 'priority', 'num_matches')
     list_editable = ('priority',)
@@ -73,7 +86,7 @@ class TableAdmin(admin.ModelAdmin):
     search_fields = ('name',)
 
 
-@admin.register(Round)
+@admin.register(Round, site=admin_site)
 class RoundAdmin(DjangoObjectActions, admin.ModelAdmin):
     list_display = ('__str__', 'tournament', 'num_matches', 'completed_matches', 'scheduled_time', 'team_scores')
     
@@ -107,7 +120,7 @@ class PlayerResultInline(admin.TabularInline):
     extra = 0
     can_delete = False
 
-@admin.register(Match)
+@admin.register(Match, site=admin_site)
 class MatchAdmin(admin.ModelAdmin):
     inlines = (TeamResultInline, PlayerResultInline)
     list_display = ('__str__', 'show_round', 'type', 'valid', 'table', 'result', 'team_scores', 'player_scores')
