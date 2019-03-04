@@ -17,7 +17,25 @@
 <div id="content-main">
 
 <div class="module">
-Current tournament: <a href="{% url 'admin:tournament_tournament_change' current_tournament.pk %}" class="rchangelink">{{ current_tournament }}</a> ({{ current_tournament.num_rounds }} rounds)
+
+<table>
+<caption>
+<div class="section">Current tournament</div>
+</caption>
+
+{% if current_tournament %}
+    <tr>
+        <th scope="row">Current tournament: <a href="{% url 'admin:tournament_tournament_change' current_tournament.pk %}" class="rchangelink">{{ current_tournament }}</a> ({{ current_tournament.num_rounds }} rounds)</th>
+    </tr>
+
+    <tr><td><a href="{% url 'admin:tournament_team_changelist' %}" class="changelink">Change teams</a></td></tr>
+    <tr><td><a href="{% url 'admin:tournament_table_changelist' %}" class="changelink">Change tables</a></td></tr>
+
+    <tr><td><a href="{% url 'admin:tournament_tournament_actions' pk=current_tournament.pk tool='create_round' %}" class="addlink">Create a new round</a></td></tr>
+{% else %}
+    <th><td scope="row"><a href="{% url 'admin:tournament_tournament_add' %}" class="addlink">Create a new tournament</a></td></th>
+{% endif %}
+</table>
 </div>
 
 {% if app_list %}
