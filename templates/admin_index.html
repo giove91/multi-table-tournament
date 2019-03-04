@@ -17,12 +17,10 @@
 <div id="content-main">
 
 <div class="module">
-
 <table>
 <caption>
 <div class="section">Current tournament</div>
 </caption>
-
 {% if current_tournament %}
     <tr>
         <th scope="row">Current tournament: <a href="{% url 'admin:tournament_tournament_change' current_tournament.pk %}" class="rchangelink">{{ current_tournament }}</a> ({{ current_tournament.num_rounds }} rounds)</th>
@@ -37,6 +35,31 @@
 {% endif %}
 </table>
 </div>
+
+{% if current_tournament and current_tournament.num_rounds > 0 %}
+{% with current_round=current_tournament.round_set.latest %}
+<div class="module">
+<table>
+<caption>
+<div class="section">Current round</div>
+</caption>
+    <tr>
+        <th scope="row">Current round: <a href="{% url 'admin:tournament_round_change' current_round.pk %}" class="rchangelink">{{ current_round }}</a></th>
+        <td></td>
+        <td></td>        
+    </tr>
+    
+    {% for match in current_round.match_set.all %}
+        <tr>
+            <td><a href="{% url 'admin:tournament_match_change' match.pk %}">{{ match }}</a></td>
+            <td>{% if match.table %}{{ match.table }}{% endif %}</td>
+            <td>{% if match.result %}{{ match.result }}{% endif %}</td>
+        </tr>
+    {% endfor %}
+</table>
+</div>
+{% endwith %}
+{% endif %}
 
 {% if app_list %}
     {% for app in app_list %}
