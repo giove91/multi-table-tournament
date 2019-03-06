@@ -89,6 +89,7 @@ class TableAdmin(admin.ModelAdmin):
 @admin.register(Round, site=admin_site)
 class RoundAdmin(DjangoObjectActions, admin.ModelAdmin):
     list_display = ('__str__', 'tournament', 'num_matches', 'completed_matches', 'scheduled_time', 'team_scores')
+    list_filter = ('tournament',)
     
     def view_matches(self, request, obj):
         return HttpResponseRedirect(reverse('admin:tournament_match_changelist') + '?round__id__exact=%d' % obj.id)

@@ -24,12 +24,14 @@
 {% if current_tournament %}
     <tr>
         <th scope="row">Current tournament: <a href="{% url 'admin:tournament_tournament_change' current_tournament.pk %}" class="rchangelink">{{ current_tournament }}</a></th>
-        <td>({{ current_tournament.num_rounds }} rounds)</td>
+        {% with num_rounds=current_tournament.num_rounds %}
+        <td>{{ num_rounds }} round{{ num_rounds|pluralize }}</td>
+        {% endwith %}
     </tr>
 
     <tr><td><a href="{% url 'admin:tournament_team_changelist' %}" class="changelink">Change teams</a></td><td></td></tr>
     <tr><td><a href="{% url 'admin:tournament_table_changelist' %}" class="changelink">Change tables</a></td><td></td></tr>
-    <tr><td><a href="{% url 'admin:tournament_round_changelist' %}" class="changelink">Change rounds</a></td><td></td></tr>
+    <tr><td><a href="{% url 'admin:tournament_round_changelist' %}?tournament__id__exact={{ current_tournament.pk }}" class="changelink">Change rounds</a></td><td></td></tr>
 
     {% comment %}
     <tr><td><a href="{% url 'admin:tournament_tournament_actions' pk=current_tournament.pk tool='create_round' %}" class="addlink">Create a new round</a></td></tr>
