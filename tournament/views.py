@@ -5,6 +5,7 @@ from django.views.generic.base import TemplateView
 from django.utils.decorators import method_decorator
 
 from django.shortcuts import redirect
+from django.contrib.admin.views.decorators import staff_member_required
 
 from .models import *
 
@@ -50,10 +51,9 @@ class IndexView(TemplateView):
         return context
 
 
-# TODO
-# @method_decorator(login_required, name='dispatch')
+@method_decorator(staff_member_required, name='dispatch')
 class CreateRoundView(View):
-    def get(self, request, pk):
+    def dispatch(self, request, pk):
         tournament = Tournament.objects.get(pk=pk)
         round, success = tournament.create_round()
         return redirect('admin:index')
