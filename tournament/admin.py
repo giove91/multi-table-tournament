@@ -124,7 +124,8 @@ class PlayerResultInline(admin.TabularInline):
 @admin.register(Match, site=admin_site)
 class MatchAdmin(admin.ModelAdmin):
     inlines = (TeamResultInline, PlayerResultInline)
-    list_display = ('__str__', 'show_round', 'type', 'valid', 'table', 'result', 'team_scores', 'player_scores')
+    # list_display = ('__str__', 'show_round', 'type', 'valid', 'table', 'result', 'team_scores', 'player_scores')
+    list_display = ('__str__', 'show_round', 'type', 'valid', 'table', 'result')
     list_filter = ('round', 'table', 'type')
     
     def show_round(self, obj):
