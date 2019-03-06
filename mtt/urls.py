@@ -18,11 +18,12 @@ from tournament import views
 from tournament.admin import admin_site
 from django.conf import settings
 from django.urls import include, path
+from django.views.decorators.cache import cache_page
 
 
 urlpatterns = [
     path('admin/', admin_site.urls),
-    path('', views.IndexView.as_view(), name='index'),
+    path('', cache_page(30)(views.IndexView.as_view()), name='index'),
 ]
 
 if settings.DEBUG:
