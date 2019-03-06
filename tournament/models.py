@@ -243,7 +243,7 @@ class Tournament(models.Model):
                 for player in team.player_set.all():
                     PlayerResult.objects.create(match=match, player=player)
                 """
-        # return round number and success/warning
+        # return round and success/warning
         return round, sum(len(pair) for pair in pairs) == len(teams)
     
     

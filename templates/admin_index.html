@@ -23,15 +23,20 @@
 </caption>
 {% if current_tournament %}
     <tr>
-        <th scope="row">Current tournament: <a href="{% url 'admin:tournament_tournament_change' current_tournament.pk %}" class="rchangelink">{{ current_tournament }}</a> ({{ current_tournament.num_rounds }} rounds)</th>
+        <th scope="row">Current tournament: <a href="{% url 'admin:tournament_tournament_change' current_tournament.pk %}" class="rchangelink">{{ current_tournament }}</a></th>
+        <td>({{ current_tournament.num_rounds }} rounds)</td>
     </tr>
 
-    <tr><td><a href="{% url 'admin:tournament_team_changelist' %}" class="changelink">Change teams</a></td></tr>
-    <tr><td><a href="{% url 'admin:tournament_table_changelist' %}" class="changelink">Change tables</a></td></tr>
+    <tr><td><a href="{% url 'admin:tournament_team_changelist' %}" class="changelink">Change teams</a></td><td></td></tr>
+    <tr><td><a href="{% url 'admin:tournament_table_changelist' %}" class="changelink">Change tables</a></td><td></td></tr>
+    <tr><td><a href="{% url 'admin:tournament_round_changelist' %}" class="changelink">Change rounds</a></td><td></td></tr>
 
+    {% comment %}
     <tr><td><a href="{% url 'admin:tournament_tournament_actions' pk=current_tournament.pk tool='create_round' %}" class="addlink">Create a new round</a></td></tr>
+    {% endcomment %}
+    <tr><td><a href="{% url 'createround' pk=current_tournament.pk %}" class="addlink">Create a new round</a> (can take a few seconds)</td><td></td></tr>
 {% else %}
-    <th><td scope="row"><a href="{% url 'admin:tournament_tournament_add' %}" class="addlink">Create a new tournament</a></td></th>
+    <th><td scope="row"><a href="{% url 'admin:tournament_tournament_add' %}" class="addlink">Create a new tournament</a></td><td></td></th>
 {% endif %}
 </table>
 </div>
@@ -45,7 +50,7 @@
 </caption>
     <tr>
         <th scope="row">Current round: <a href="{% url 'admin:tournament_round_change' current_round.pk %}" class="rchangelink">{{ current_round }}</a></th>
-        <td></td>
+        <td>Time: {{ current_round.scheduled_time }}</td>
         <td></td>        
     </tr>
     

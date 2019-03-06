@@ -1,5 +1,10 @@
 from django.shortcuts import render
+from django.views import View
 from django.views.generic.base import TemplateView
+
+from django.utils.decorators import method_decorator
+
+from django.shortcuts import redirect
 
 from .models import *
 
@@ -43,4 +48,14 @@ class IndexView(TemplateView):
                 context['player_scoreboard'] = context['player_scoreboard'][:min(tournament.shown_players, len(context['player_scoreboard']))]
         
         return context
+
+
+# TODO
+# @method_decorator(login_required, name='dispatch')
+class CreateRoundView(View):
+    def get(self, request, pk):
+        tournament = Tournament.objects.get(pk=pk)
+        round, success = tournament.create_round()
+        return redirect('admin:index')
+
 
