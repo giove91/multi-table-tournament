@@ -6,6 +6,7 @@ from decimal import Decimal
 
 from django.db import models
 from django.core.validators import RegexValidator
+from django.core.validators import MaxValueValidator, MinValueValidator 
 from django.core.exceptions import ValidationError
 
 from django.utils.translation import gettext_lazy as _
@@ -310,10 +311,9 @@ class Table(models.Model):
 
 
 class Round(models.Model):
-    number = models.PositiveIntegerField()
+    number = models.IntegerField(validators=[MinValueValidator(1)])
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
     scheduled_time = models.DateTimeField(blank=True, null=True, default=None, help_text="Used only for displaying purposes.")
-    
     
     def __str__(self):
         return 'Round %d' % self.number
