@@ -88,7 +88,8 @@ class TableAdmin(admin.ModelAdmin):
 
 @admin.register(Round, site=admin_site)
 class RoundAdmin(DjangoObjectActions, admin.ModelAdmin):
-    list_display = ('__str__', 'tournament', 'visibility', 'scheduled_time', 'num_matches', 'completed_matches', 'team_scores')
+    # list_display = ('__str__', 'tournament', 'visibility', 'scheduled_time', 'num_matches', 'completed_matches', 'team_scores')
+    list_display = ('__str__', 'tournament', 'visibility', 'scheduled_time', 'num_matches', 'completed_matches')
     list_filter = ('tournament',)
     
     def view_matches(self, request, obj):
