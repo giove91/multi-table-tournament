@@ -42,7 +42,7 @@ class TournamentAdmin(DjangoObjectActions, admin.ModelAdmin):
                 level=messages.SUCCESS
             )
     
-    create_round.label = "Create round"
+    create_round.label = "Generate round"
     create_round.short_description = "Generate a new round with matches"
 
     change_actions = ('create_round',)
@@ -88,7 +88,7 @@ class TableAdmin(admin.ModelAdmin):
 
 @admin.register(Round, site=admin_site)
 class RoundAdmin(DjangoObjectActions, admin.ModelAdmin):
-    list_display = ('__str__', 'tournament', 'num_matches', 'completed_matches', 'scheduled_time', 'team_scores')
+    list_display = ('__str__', 'tournament', 'visibility', 'scheduled_time', 'num_matches', 'completed_matches', 'team_scores')
     list_filter = ('tournament',)
     
     def view_matches(self, request, obj):

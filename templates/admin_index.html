@@ -37,7 +37,7 @@
     {% comment %}
     <tr><td><a href="{% url 'admin:tournament_tournament_actions' pk=current_tournament.pk tool='create_round' %}" class="addlink">Create a new round</a></td></tr>
     {% endcomment %}
-    <tr><td><a href="{% url 'createround' pk=current_tournament.pk %}" class="addlink">Create a new round</a> (can take a few seconds)</td><td></td></tr>
+    <tr><td><a href="{% url 'createround' pk=current_tournament.pk %}" class="addlink">Generate a new round</a> (can take a few seconds)</td><td></td></tr>
 {% else %}
     <th><td scope="row"><a href="{% url 'admin:tournament_tournament_add' %}" class="addlink">Create a new tournament</a></td><td></td></th>
 {% endif %}
@@ -53,8 +53,8 @@
 </caption>
     <tr>
         <th scope="row">Current round: <a href="{% url 'admin:tournament_round_change' current_round.pk %}" class="rchangelink">{{ current_round }}</a></th>
+        <td>Visibility: {{ current_round.get_visibility_display }}</td>        
         <td>Time: {{ current_round.scheduled_time }}</td>
-        <td></td>        
     </tr>
     
     {% for match in current_round.match_set.all %}

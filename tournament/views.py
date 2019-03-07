@@ -41,9 +41,9 @@ class IndexView(TemplateView):
         context['tournament'] = tournament
         
         if tournament is not None:
-            context['team_scoreboard'] = sorted_scoreboard(tournament.team_scoreboard())
-            context['player_scoreboard'] = sorted_scoreboard(tournament.player_scoreboard())
-            context['rounds'] = tournament.round_set.all().order_by('-number')
+            context['team_scoreboard'] = sorted_scoreboard(tournament.team_scoreboard(public=True))
+            context['player_scoreboard'] = sorted_scoreboard(tournament.player_scoreboard(public=True))
+            context['rounds'] = tournament.round_set.exclude(visibility=HIDE).order_by('-number')
             
             if tournament.shown_players is not None:
                 context['player_scoreboard'] = context['player_scoreboard'][:min(tournament.shown_players, len(context['player_scoreboard']))]

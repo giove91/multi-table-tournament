@@ -97,7 +97,7 @@
     <tr>
         <td>{{ match }}</td>
         <td>{{ match.table|default_if_none:"-" }}</td>
-        <td class="text-center">{{ match.result|default_if_none:"-" }}</td>
+        <td class="text-center">{% if round.show_results %}{{ match.result|default_if_none:"-" }}{% else %}-{% endif %}</td>
     </tr>
 {% endfor %}
 </tbody>

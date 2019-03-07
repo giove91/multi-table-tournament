@@ -11,8 +11,20 @@ from django.core.exceptions import ValidationError
 
 from django.utils.translation import gettext_lazy as _
 
+
+# match types
 NORMAL = 'N'
 BYE = 'B'
+
+# round visibility
+HIDE = 'H'
+HIDE_RESULTS = 'R'
+SHOW = 'S'
+VISIBILITY_CHOICES = (
+    (HIDE, 'Hide'),
+    (HIDE_RESULTS, 'Hide results'),
+    (SHOW, 'Show'),
+)
 
 
 class Score:
@@ -89,6 +101,7 @@ class Tournament(models.Model):
     name = models.CharField(max_length=1024)
     creation_time = models.DateTimeField(auto_now_add=True)
     bye_score = models.DecimalField(max_digits=4, decimal_places=1, default=3, help_text='Score to assign for a bye.')
+    default_round_visibility = models.CharField(max_length=2, choices=VISIBILITY_CHOICES, default=SHOW, help_text='Default visibility of generated rounds.')
     shown_players = models.PositiveIntegerField(null=True, blank=True, default=10, help_text='Number of players to show in the scoreboard. If no value is given, all players are shown.')
     
     def __str__(self):
@@ -98,15 +111,15 @@ class Tournament(models.Model):
         return Round.objects.filter(tournament=self).count()
     
     
-    def team_scoreboard(self, fill_results=False):
-        res = sum((match.team_scoreboard(fill_results=fill_results) for match in Match.objects.filter(round__tournament=self)), Counter())
+    def team_scoreboard(self, public=False, fill_results=False):
+        res = sum((match.team_scoreboard(public=public, fill_results=fill_results) for match in Match.objects.filter(round__tournament=self)), Counter())
         for team in Team.objects.filter(active=True):
             if team not in res:
                 res[team] = Score()
         return res
     
-    def player_scoreboard(self):
-        res = sum((match.player_scoreboard() for match in Match.objects.filter(round__tournament=self)), Counter())
+    def player_scoreboard(self, public=False):
+        res = sum((match.player_scoreboard(public=public) for match in Match.objects.filter(round__tournament=self)), Counter())
         for player in Player.objects.filter(team__active=True):
             if player not in res:
                 res[player] = Score()
@@ -146,7 +159,7 @@ class Tournament(models.Model):
             G.add_nodes_from(teams)
             
             # analyze scoreboard
-            scoreboard = self.team_scoreboard(fill_results=True) # pending results are considered as full victories for all teams
+            scoreboard = self.team_scoreboard(public=False, fill_results=True) # pending results are considered as full victories for all teams
             # print("Scoreboard")
             # print(scoreboard)
             
@@ -229,7 +242,7 @@ class Tournament(models.Model):
         else:
             round_number = 1
         
-        round = Round.objects.create(number=round_number, tournament=self)
+        round = Round.objects.create(number=round_number, tournament=self, visibility=self.default_round_visibility)
         
         for pair in pairs:
             match = Match.objects.create(
@@ -313,6 +326,7 @@ class Table(models.Model):
 class Round(models.Model):
     number = models.IntegerField(validators=[MinValueValidator(1)])
     tournament = models.ForeignKey(Tournament, on_delete=models.CASCADE)
+    visibility = models.CharField(max_length=2, choices=VISIBILITY_CHOICES, default=SHOW)
     scheduled_time = models.DateTimeField(blank=True, null=True, default=None, help_text="Used only for displaying purposes.")
     
     def __str__(self):
@@ -324,8 +338,8 @@ class Round(models.Model):
     def completed_matches(self):
         return sum(1 for match in self.match_set.all() if match.type == BYE or all(team_result.score is not None for team_result in match.teamresult_set.all()))
     
-    def team_scoreboard(self, fill_results=False):
-        res = sum((match.team_scoreboard(fill_results=fill_results) for match in Match.objects.filter(round=self)), Counter())
+    def team_scoreboard(self, public=False, fill_results=False):
+        res = sum((match.team_scoreboard(public=public, fill_results=fill_results) for match in Match.objects.filter(round=self)), Counter())
         for team in Team.objects.filter(active=True):
             if team not in res:
                 res[team] = Score()
@@ -333,6 +347,9 @@ class Round(models.Model):
     
     def normal_matches(self):
         return [match for match in self.match_set.filter(type=NORMAL) if match.valid()]
+    
+    def show_results(self):
+        return self.visibility == SHOW
     
     class Meta:
         ordering = ['number']
@@ -391,10 +408,14 @@ class Match(models.Model):
         else:
             return ' - '.join(str(team_result.score) for team_result in self.teamresult_set.all())
     
-    def team_scoreboard(self, fill_results=False):
+    def team_scoreboard(self, public=False, fill_results=False):
         """
         Return a Counter with the scores of this match.
         """
+        if public and self.round.visibility != SHOW:
+            # the results for this match should be hidden
+            return Counter()
+        
         if self.type == BYE:
             return Counter({
                 team_result.team: Score(Decimal('1.0'), self.round.tournament.bye_score, 1, BYE) for team_result in self.teamresult_set.all()
@@ -426,7 +447,11 @@ class Match(models.Model):
                 })
     
     
-    def player_scoreboard(self):
+    def player_scoreboard(self, public=False):
+        if public and self.round.visibility != SHOW:
+            # the results for this match should be hidden
+            return Counter()
+        
         if self.type == BYE:
             return Counter({
                 player_result.player: Score(Decimal('1.0'), num_matches=1, match_type=BYE) for player_result in self.playerresult_set.all()
