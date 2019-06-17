@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n static %}
 
 {% language 'it' %}
 <!doctype html>
@@ -7,10 +7,12 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    
+
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    
+
+    <link rel="stylesheet" type="text/css" href="{% static "style.css" %}">
+
     <title>{{ tournament.name }}</title>
 </head>
 
@@ -37,10 +39,29 @@
 {% for team, score, rank in team_scoreboard %}
     <tr>
         <th scope="row" class="text-center">{{ rank }}</th>
-        <td>{{ team }}</td>
+        <td class="clickable" data-toggle="modal" data-target="#team-modal-{{ team.id }}">{{ team }}</td>
         <td class="text-center">{{ score.primary }} / {{ score.num_matches }}</td>
         <td class="text-center">{{ score.secondary }}</td>
     </tr>
+
+    {# Team modal #}
+    <div class="modal fade" id="team-modal-{{ team.id }}" tabindex="-1" role="dialog" aria-labelledby="label-team-{{ team.id }}" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="label-team-{{ team.id }}">{{ team.name }}</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            {% for player in team.player_set.all %}
+                {{ player.name }}<br />
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
 {% endfor %}
 </tbody>
 </table>
@@ -102,6 +123,8 @@
 </div>
 
 {% endfor %}
+
+
 
 
 </div>

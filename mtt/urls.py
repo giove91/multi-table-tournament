@@ -24,7 +24,8 @@ from django.views.decorators.cache import cache_page
 urlpatterns = [
     path('admin/createround/<int:pk>/', views.CreateRoundView.as_view(), name='createround'),
     path('admin/', admin_site.urls),
-    path('', cache_page(30)(views.IndexView.as_view()), name='index'),
+    # path('', cache_page(30)(views.IndexView.as_view()), name='index'),
+    path('', views.IndexView.as_view(), name='index'),
 ]
 
 # debug toolbar
