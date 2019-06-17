@@ -115,6 +115,9 @@ class Tournament(models.Model):
     def num_rounds(self):
         return Round.objects.filter(tournament=self).count()
 
+    def can_register(self):
+        return self.is_registration_open and (self.max_teams is None or Team.objects.count() < self.max_teams)
+
 
     def team_scoreboard(self, public=False, fill_results=False):
         res = sum((match.team_scoreboard(public=public, fill_results=fill_results) for match in Match.objects.filter(round__tournament=self)), Counter())

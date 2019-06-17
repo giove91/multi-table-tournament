@@ -13,6 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from tournament import views
 from tournament.admin import admin_site
@@ -20,12 +21,15 @@ from django.conf import settings
 from django.urls import include, path
 from django.views.decorators.cache import cache_page
 
+from django.views.generic.base import RedirectView
 
 urlpatterns = [
     path('admin/createround/<int:pk>/', views.CreateRoundView.as_view(), name='createround'),
     path('admin/', admin_site.urls),
     # path('', cache_page(30)(views.IndexView.as_view()), name='index'),
     path('', views.IndexView.as_view(), name='index'),
+    path('registration/', views.RegistrationView.as_view(), name='registration'),
+    path('thanks/', views.ThanksView.as_view(), name='thanks'),
 ]
 
 # debug toolbar

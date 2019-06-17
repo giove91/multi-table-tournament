@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+{% block title %}Iscrizione{% endblock %}
+
+{% block content %}
+<h1>{{ tournament.name }} - Iscrizione squadra</h1>
+
+<div class="my-4">
+{% if tournament.can_register %}
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Iscrivi questa squadra">
+</form>
+{% else %}
+<p>Le iscrizioni sono chiuse.<br />
+Puoi tornare alla <a href="{% url 'index' %}">pagina principale</a>.</p>
+{% endif %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+{% block title %}Iscrizione{% endblock %}
+
+{% block content %}
+<h1>{{ tournament.name }} - Iscrizione squadra</h1>
+
+<div class="my-4">
+<p>L'iscrizione è avvenuta con successo. Grazie!<br />
+Se hai bisogno di modificare la squadra, contatta gli organizzatori.</p>
+</div>
+
+<div class="my-4">
+<p>Ora puoi tornare alla <a href="{% url 'index' %}">pagina principale</a>.</p>
+</div>
+
+{% endblock %}

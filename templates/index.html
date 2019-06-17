@@ -6,6 +6,10 @@
 {% block content %}
 <h1>{{ tournament.name }}</h1>
 
+{% if tournament.can_register %}
+<h3 class="my-4">Iscrizioni</h3>
+<p>Su <a href="{% url 'registration' %}">questa pagina</a> puoi iscrivere una nuova squadra.</p>
+{% endif %}
 
 {% for round in rounds %}
 
