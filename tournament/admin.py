@@ -24,9 +24,22 @@ admin_site.register(Group)
 
 @admin.register(Tournament, site=admin_site)
 class TournamentAdmin(DjangoObjectActions, admin.ModelAdmin):
-    list_display = ('name', 'creation_time', 'bye_score', 'shown_players', 'num_rounds', 'team_scores', 'player_scores')
+    list_display = ('name', 'creation_time', 'bye_score', 'shown_players', 'is_registration_open', 'num_rounds')
+    # list_display = ('name', 'creation_time', 'bye_score', 'shown_players', 'num_rounds', 'team_scores', 'player_scores')
     search_fields = ('name',)
-    
+
+    fieldsets = (
+        (None, {
+            'fields': ('name', 'bye_score')
+        }),
+        ('Public page', {
+            'fields': ('default_round_visibility', 'shown_players'),
+        }),
+        ('Registration', {
+            'fields': ('is_registration_open', 'max_teams'),
+        }),
+    )
+
     def create_round(self, request, obj):
         round, success = obj.create_round()
         if not success:
@@ -41,15 +54,15 @@ class TournamentAdmin(DjangoObjectActions, admin.ModelAdmin):
                 format_html('<a href="%s">Round %d</a> created.' % (reverse('admin:tournament_round_change', args=(round.id,)), round.number)),
                 level=messages.SUCCESS
             )
-    
+
     create_round.label = "Generate round"
     create_round.short_description = "Generate a new round with matches"
 
     change_actions = ('create_round',)
-    
+
     def team_scores(self, obj):
         return score_counter_to_str(obj.team_scoreboard())
-    
+
     def player_scores(self, obj):
         return score_counter_to_str(obj.player_scoreboard(), hide_secondary=True)
 
@@ -64,7 +77,7 @@ class TeamAdmin(admin.ModelAdmin):
     inlines = (PlayerInline,)
     list_display = ('name', 'players')
     search_fields = ('name',)
-    
+
     def players(self, obj):
         return ", ".join(player.name for player in obj.player_set.all())
 
@@ -73,7 +86,7 @@ class TeamAdmin(admin.ModelAdmin):
 class PlayerAdmin(admin.ModelAdmin):
     list_display = ('name', 'team', 'phone_number', 'is_captain')
     # list_editable = ('team', 'phone_number', 'is_captain')
-    
+
     search_fields = ('name', 'team__name')
     autocomplete_fields = ('team',)
 
@@ -91,18 +104,18 @@ class RoundAdmin(DjangoObjectActions, admin.ModelAdmin):
     # list_display = ('__str__', 'tournament', 'visibility', 'scheduled_time', 'num_matches', 'completed_matches', 'team_scores')
     list_display = ('__str__', 'tournament', 'visibility', 'scheduled_time', 'num_matches', 'completed_matches')
     list_filter = ('tournament',)
-    
+
     def view_matches(self, request, obj):
         return HttpResponseRedirect(reverse('admin:tournament_match_changelist') + '?round__id__exact=%d' % obj.id)
-    
+
     view_matches.label = "View matches"
     view_matches.short_description = "View list of matches of this round"
 
     change_actions = ('view_matches',)
-    
+
     def team_scores(self, obj):
         return score_counter_to_str(obj.team_scoreboard())
-    
+
 
 
 class TeamResultInline(admin.TabularInline):
@@ -111,7 +124,7 @@ class TeamResultInline(admin.TabularInline):
     autocomplete_fields = ('team',)
     # TODO: limit teams to those that are not already in a match
     # (Django 2.1 does not support this together with autocomplete_fields)
-    
+
     max_num = 2
     extra = 2
 
@@ -128,15 +141,13 @@ class MatchAdmin(admin.ModelAdmin):
     # list_display = ('__str__', 'show_round', 'type', 'valid', 'table', 'result', 'team_scores', 'player_scores')
     list_display = ('__str__', 'show_round', 'type', 'valid', 'table', 'result')
     list_filter = ('round__tournament', 'round', 'table', 'type')
-    
+
     def show_round(self, obj):
         return format_html("<a href='{url}'>{round}</a>", url=reverse('admin:tournament_round_change', args=(obj.round.id,)), round=obj.round)
     show_round.short_description = "round"
-    
+
     def team_scores(self, obj):
         return score_counter_to_str(obj.team_scoreboard())
 
     def player_scores(self, obj):
         return score_counter_to_str(obj.player_scoreboard(), hide_secondary=True)
-
-
