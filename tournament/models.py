@@ -5,6 +5,8 @@ from collections import Counter
 from decimal import Decimal
 
 from django.db import models
+from django.utils.functional import cached_property
+
 from django.core.validators import RegexValidator
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.core.exceptions import ValidationError
@@ -117,7 +119,6 @@ class Tournament(models.Model):
 
     def can_register(self):
         return self.is_registration_open and (self.max_teams is None or Team.objects.count() < self.max_teams)
-
 
     def team_scoreboard(self, public=False, fill_results=False):
         res = sum((match.team_scoreboard(public=public, fill_results=fill_results) for match in Match.objects.filter(round__tournament=self)), Counter())

@@ -72,7 +72,7 @@
           </div>
           <div class="modal-body">
             {% for player in team.player_set.all %}
-                {{ player.name }}<br />
+                {{ player.name }}{% if player.is_captain %} (capitano){% endif %}<br />
             {% endfor %}
           </div>
         </div>
