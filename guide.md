@@ -42,7 +42,7 @@ You can generate (or manually create) a new round even if not all matches of the
 
 A round has the following properties.
 - Number: newly generated rounds get the smallest natural number greater than the number of all existing rounds.
-- Visibility: this affects what is shown in the public page. If set to _Hide_, the round does not appear at all in the public page. If set to _Hide results_, the round appears in the public page, but the results of the matches are not shown. If set to _Show_, the round appears in the public page together with all the results of completed matches.
+- Visibility: this affects what is shown in the public page. If set to _Hide_, the round does not appear at all in the public page. If set to _Hide results_, the round appears in the public page, but the results of the matches are not shown (and they are ignored in the public scoreboards). If set to _Show_, the round appears in the public page together with all the results of completed matches.
 - Scheduled time: if set, this time appears in the public page.
 
 ### Matches
@@ -55,5 +55,13 @@ Matches can be manually added, edited, and deleted, after a round is generated.
 
 
 ### Add results
+
+When a match is completed, you can add its result in the match page.
+You need to provide the score of both teams. The team with the highest score gets the match victory; if the two teams are tied, they get half a victory each.
+In the tournament scoreboard, teams are ranked based on the number of victories, and then (in case of ties) based on the sum of the scores.
+
+You can optionally add individual results for a match.
+This means that some of the players get points, which count for the individual scoreboard.
+The sum of the scores of the players of a team (in a given match) need not be equal to the score of the team for that match.
 
 
