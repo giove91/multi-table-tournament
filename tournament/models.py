@@ -120,7 +120,7 @@ class Tournament(models.Model):
         return self.is_registration_open and (self.max_teams is None or Team.objects.count() < self.max_teams)
 
     def team_scoreboard(self, public=False, fill_results=False):
-        res = sum((match.team_scoreboard(public=public, fill_results=fill_results) for match in Match.objects.filter(round__tournament=self).prefetch_related('round', 'teamresult_set__team__player_set')), Counter())
+        res = sum((match.team_scoreboard(public=public, fill_results=fill_results) for match in Match.objects.filter(round__tournament=self).prefetch_related('round', 'teamresult_set__team__player_set', 'teams')), Counter())
         for team in Team.objects.filter(active=True):
             if team not in res:
                 res[team] = Score()
@@ -352,7 +352,7 @@ class Round(models.Model):
         return res
 
     def normal_matches(self):
-        return [match for match in self.match_set.filter(type=NORMAL) if match.valid()]
+        return [match for match in self.match_set.all() if match.type == NORMAL and match.valid()]
 
     def show_results(self):
         return self.visibility == SHOW
