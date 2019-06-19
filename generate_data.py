@@ -6,36 +6,36 @@ import names
 import random
 
 
-TEAM_NAMES = ['Alpha', 'Beta', 'Gamma', 'Delta', 'Epsilon', 'Zeta', 'Eta', 'Theta', 'Iota', 'Kappa', 'Lambda', 'Mu', 'Nu', 'Xi']
+TEAM_NAMES = ['Alpha', 'Beta', 'Gamma', 'Delta', 'Epsilon', 'Zeta', 'Eta', 'Theta', 'Iota', 'Kappa', 'Lambda', 'Mu', 'Nu', 'Xi', 'Omicron', 'Pi', 'Rho', 'Sigma', 'Tau', 'Upsilon', 'Phi', 'Chi', 'Psi', 'Omega']
 
 TABLE_NAMES = ['Astratti', 'Europei', 'Africani', 'Asiatici', 'Traguardo', 'Connessione', 'Scacchi', 'Dama', 'Atipici', 'Classici', 'Allineamento', 'Gigamic', 'Neoclassici']
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Generate random teams, players, and tables.')
-    
+
     parser.add_argument('num_teams', type=int, nargs='?', default=8, help='number of teams')
     parser.add_argument('num_players', type=int, nargs='?', default=6, help='number of players per team')
     parser.add_argument('num_tables', type=int, nargs='?', default=10, help='number of tables')
-    
+
     args = parser.parse_args()
-    
+
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mtt.settings')
     django.setup()
-    
+
     from tournament.models import *
-    
+
     # create teams
     print("Create teams")
     Team.objects.all().delete()
     team_names = TEAM_NAMES[:args.num_teams]
     teams = [Team.objects.create(name=name) for name in team_names]
-    
+
     # create players
     for team in teams:
         players = [Player.objects.create(name=names.get_full_name(), team=team) for i in range(args.num_players)]
         print(players)
-    
+
     # create tables
     print("Create tables")
     Table.objects.all().delete()

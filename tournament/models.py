@@ -5,7 +5,6 @@ from collections import Counter
 from decimal import Decimal
 
 from django.db import models
-from django.utils.functional import cached_property
 
 from django.core.validators import RegexValidator
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -121,14 +120,14 @@ class Tournament(models.Model):
         return self.is_registration_open and (self.max_teams is None or Team.objects.count() < self.max_teams)
 
     def team_scoreboard(self, public=False, fill_results=False):
-        res = sum((match.team_scoreboard(public=public, fill_results=fill_results) for match in Match.objects.filter(round__tournament=self)), Counter())
+        res = sum((match.team_scoreboard(public=public, fill_results=fill_results) for match in Match.objects.filter(round__tournament=self).prefetch_related('round', 'teamresult_set__team__player_set')), Counter())
         for team in Team.objects.filter(active=True):
             if team not in res:
                 res[team] = Score()
         return res
 
     def player_scoreboard(self, public=False):
-        res = sum((match.player_scoreboard(public=public) for match in Match.objects.filter(round__tournament=self)), Counter())
+        res = sum((match.player_scoreboard(public=public) for match in Match.objects.filter(round__tournament=self).prefetch_related('round', 'playerresult_set__player__team')), Counter())
         for player in Player.objects.filter(team__active=True):
             if player not in res:
                 res[player] = Score()
@@ -261,11 +260,9 @@ class Tournament(models.Model):
             )
 
             for team in pair:
+                # this also creates PlayerResult objects, so we cannot use bulk_create
                 TeamResult.objects.create(match=match, team=team)
-                """
-                for player in team.player_set.all():
-                    PlayerResult.objects.create(match=match, player=player)
-                """
+
         # return round and success/warning
         return round, sum(len(pair) for pair in pairs) == len(teams)
 
@@ -487,8 +484,9 @@ class TeamResult(models.Model):
 
         # create PlayerResult objects if they do not exist
         if PlayerResult.objects.filter(match=self.match, player__team=self.team).count() == 0:
-            for player in self.team.player_set.all():
-                PlayerResult.objects.create(match=self.match, player=player)
+            PlayerResult.objects.bulk_create([PlayerResult(match=self.match, player=player) for player in self.team.player_set.all()])
+            # for player in self.team.player_set.all():
+            #     PlayerResult.objects.create(match=self.match, player=player)
 
     def delete(self, *args, **kwargs):
         super().delete(*args, **kwargs)  # call the "real" delete() method.
