@@ -372,7 +372,7 @@ class Match(models.Model):
 
     round = models.ForeignKey(Round, on_delete=models.CASCADE)
     type = models.CharField(max_length=1, choices=TYPE_CHOICES, default=NORMAL)
-    table = models.ForeignKey(Table, on_delete=models.CASCADE, blank=True, null=True, default=None)
+    table = models.ForeignKey(Table, on_delete=models.SET_NULL, blank=True, null=True, default=None)
     teams = models.ManyToManyField(Team, through='TeamResult')
     players = models.ManyToManyField(Player, through='PlayerResult')
 
