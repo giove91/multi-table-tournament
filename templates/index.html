@@ -4,15 +4,20 @@
 {% block title %}{{ tournament.name }}{% endblock %}
 
 {% block content %}
+
+{% if tournament %}
 <h1>{{ tournament.name }}</h1>
+{% else %}
+<p>Non c'è alcun torneo.</p>
+{% endif %}
 
 {% if tournament.can_register %}
 <h3 class="my-4">Iscrizioni</h3>
 <p>Su <a href="{% url 'registration' %}">questa pagina</a> puoi iscrivere una nuova squadra.</p>
 {% endif %}
 
-{% for round in rounds %}
 
+{% for round in rounds %}
 <h3 class="my-4">Turno {{ round.number }}{% if round.scheduled_time %}
 <small class="text-muted">({{ round.scheduled_time|date:"l" }} alle {{ round.scheduled_time|date:"G:i" }})</small>{% endif %}</h3>
 
@@ -36,9 +41,10 @@
 </tbody>
 </table>
 </div>
-
 {% endfor %}
 
+
+{% if team_scoreboard %}
 <h3 class="my-4">Classifica squadre</h3>
 
 <div class="table-responsive">
@@ -63,6 +69,7 @@
 </tbody>
 </table>
 </div>
+{% endif %}
 
 {# Team modals #}
 {% for team in teams %}
