@@ -59,29 +59,31 @@
         <td class="text-center">{{ score.primary }} / {{ score.num_matches }}</td>
         <td class="text-center">{{ score.secondary }}</td>
     </tr>
-
-    {# Team modal #}
-    <div class="modal fade" id="team-modal-{{ team.id }}" tabindex="-1" role="dialog" aria-labelledby="label-team-{{ team.id }}" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="label-team-{{ team.id }}">{{ team.name }}</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-          <div class="modal-body">
-            {% for player in team.player_set.all %}
-                {{ player.name }}{% if player.is_captain %} (capitano){% endif %}<br />
-            {% endfor %}
-          </div>
-        </div>
-      </div>
-    </div>
 {% endfor %}
 </tbody>
 </table>
 </div>
+
+{# Team modals #}
+{% for team in teams %}
+<div class="modal fade" id="team-modal-{{ team.id }}" tabindex="-1" role="dialog" aria-labelledby="label-team-{{ team.id }}" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="label-team-{{ team.id }}">{{ team.name }}</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        {% for player in team.player_set.all %}
+            {{ player.name }}{% if player.is_captain %} (capitano){% endif %}<br />
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endfor %}
 
 {% if player_scoreboard %}
 <h3 class="my-4">Classifica individuale</h3>
