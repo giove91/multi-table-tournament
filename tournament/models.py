@@ -355,8 +355,11 @@ class Round(models.Model):
                 res[team] = Score()
         return res
 
-    def normal_matches(self):
-        return [match for match in self.match_set.all() if match.type == NORMAL and match.valid()]
+    def valid_matches(self):
+        return [match for match in self.match_set.all() if match.valid()]
+
+    # def normal_matches(self):
+    #     return [match for match in self.match_set.all() if match.type == NORMAL and match.valid()]
 
     def show_results(self):
         return self.visibility == SHOW
