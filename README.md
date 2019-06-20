@@ -4,7 +4,7 @@ Web application to manage a Swiss-like tournament where matches are played at di
 
 ## Local testing
 
-To run the application locally: clone the repository, install the Python 3 [requirements](requirements.txt), and then issue the following commands.
+To run the application locally: clone the repository, install the [requirements](requirements.txt) (Python 3 is needed), and then issue the following commands.
 
 ```
 python manage.py migrate
