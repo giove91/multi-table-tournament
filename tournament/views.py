@@ -1,3 +1,4 @@
+import django
 from django.shortcuts import render
 from django.views import View
 from django.views.generic.base import TemplateView
@@ -81,7 +82,11 @@ class RegistrationView(FormView):
             data = form.cleaned_data
 
             # create team
-            team = Team.objects.create(name=data['team_name'])
+            try:
+                team = Team.objects.create(name=data['team_name'])
+            except django.db.utils.IntegrityError:
+                # a team with this name already exists...
+                return redirect('registration')
 
             # create players
             for i in range(100):

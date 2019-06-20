@@ -1,6 +1,8 @@
 from django import forms
 from django.core.exceptions import ValidationError
 
+from .models import *
+
 
 ERROR_MESSAGES = {
     'required': 'Completare questo campo.',
@@ -14,8 +16,15 @@ def validate_captcha(value):
             'Risposta errata.'
         )
 
+def validate_team_name(name):
+    if Team.objects.filter(name=name).count() > 0:
+        raise ValidationError(
+            'Esiste già una squadra con questo nome.'
+        )
+
+
 class RegistrationForm(forms.Form):
-    team_name = forms.CharField(max_length=25, label='Nome della squadra', error_messages=ERROR_MESSAGES)
+    team_name = forms.CharField(max_length=25, label='Nome della squadra', error_messages=ERROR_MESSAGES, validators=[validate_team_name])
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

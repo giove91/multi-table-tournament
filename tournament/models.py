@@ -304,7 +304,7 @@ class Player(models.Model):
 
     class Meta:
         ordering = ['team', 'name']
-        unique_together = ('team', 'name')
+        # unique_together = ('team', 'name')
         # order_with_respect_to = 'team'
 
 
