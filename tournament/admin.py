@@ -24,7 +24,7 @@ admin_site.register(Group)
 
 @admin.register(Tournament, site=admin_site)
 class TournamentAdmin(DjangoObjectActions, admin.ModelAdmin):
-    list_display = ('name', 'creation_time', 'bye_score', 'shown_players', 'is_registration_open', 'num_rounds')
+    list_display = ('name', 'creation_time', 'bye_score', 'shown_players', 'is_registration_open', 'max_teams', 'num_rounds')
     # list_display = ('name', 'creation_time', 'bye_score', 'shown_players', 'num_rounds', 'team_scores', 'player_scores')
     search_fields = ('name',)
 

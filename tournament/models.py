@@ -274,7 +274,7 @@ class Tournament(models.Model):
 
 
 class Team(models.Model):
-    name = models.CharField(max_length=1024)
+    name = models.CharField(max_length=1024, unique=True)
     active = models.BooleanField(default=True, help_text='Inactive teams are not considered for future turns and do not appear in the scoreboard.')
 
     def __str__(self):
@@ -304,6 +304,7 @@ class Player(models.Model):
 
     class Meta:
         ordering = ['team', 'name']
+        unique_together = ('team', 'name')
         # order_with_respect_to = 'team'
 
 
