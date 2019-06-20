@@ -21,7 +21,9 @@ A Tournament object has the following properties. They can be changed after the 
 
 Teams can be added and edited through the admin interface, at any time.
 A team has a (possibly empty) list of players.
-Do not delete a team after the first round has been generated, because this would delete all its matches.
+Do not delete a team after the first round has been generated, because this would mess up with its matches.
+Rather, at any time you can make a team _inactive_: inactive teams are not shown in the team scoreboard, and players of inactive teams are not shown in the player scoreboard.
+An inactive team can be made active again at any time.
 
 
 ### Create tables
@@ -31,7 +33,7 @@ You should make sure that the number of tables is at least half the number of te
 
 Tables have a priority, which is an integer number between 0 and 100. Tables with a higher priority are preferred, during round generation.
 
-Tables can be added and edited also during the tournament. If the priority is changed, this will only affect future round generation. Do not delete a table which is used in at least one match, because this would delete all these matches.
+Tables can be added and edited also during the tournament. If the priority is changed, this will only affect future round generation. If you delete a table, all the matches that use this table become table-less.
 
 
 ## Create new rounds
