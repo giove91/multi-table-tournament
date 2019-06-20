@@ -294,6 +294,10 @@ class Player(models.Model):
 
     is_captain = models.BooleanField(default=False)
 
+    def _active(self):
+        return self.team.active
+    _active.boolean = True
+    active = property(_active)
 
     def __str__(self):
         return '%s (%s)' % (self.name, self.team.name)

@@ -18,6 +18,10 @@ def sorted_scoreboard(scoreboard):
     """
     by_score = {}
     for (entity, score) in scoreboard.items():
+        # skip inactive
+        if not entity.active:
+            continue
+
         if score.raw() not in by_score:
             by_score[score.raw()] = []
         by_score[score.raw()].append(entity)
@@ -47,7 +51,7 @@ class IndexView(TemplateView):
             context['team_scoreboard'] = sorted_scoreboard(tournament.team_scoreboard(public=True))
             context['player_scoreboard'] = sorted_scoreboard(tournament.player_scoreboard(public=True))
             context['rounds'] = tournament.round_set.exclude(visibility=HIDE).order_by('-number').prefetch_related('match_set__teams', 'match_set__teamresult_set', 'match_set__table')
-            context['teams'] = Team.objects.all().prefetch_related('player_set')
+            context['teams'] = Team.objects.filter(active=True).prefetch_related('player_set')
 
             if tournament.shown_players is not None:
                 context['player_scoreboard'] = context['player_scoreboard'][:min(tournament.shown_players, len(context['player_scoreboard']))]

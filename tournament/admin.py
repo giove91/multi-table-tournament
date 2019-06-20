@@ -75,8 +75,9 @@ class PlayerInline(admin.TabularInline):
 @admin.register(Team, site=admin_site)
 class TeamAdmin(admin.ModelAdmin):
     inlines = (PlayerInline,)
-    list_display = ('name', 'players')
+    list_display = ('name', 'active', 'players')
     search_fields = ('name',)
+    list_filter = ('active',)
 
     def players(self, obj):
         return ", ".join(player.name for player in obj.player_set.all())
@@ -84,7 +85,8 @@ class TeamAdmin(admin.ModelAdmin):
 
 @admin.register(Player, site=admin_site)
 class PlayerAdmin(admin.ModelAdmin):
-    list_display = ('name', 'team', 'phone_number', 'is_captain')
+    list_display = ('name', 'team', '_active', 'phone_number', 'is_captain')
+    list_filter = ('team', 'team__active')
     # list_editable = ('team', 'phone_number', 'is_captain')
 
     search_fields = ('name', 'team__name')
