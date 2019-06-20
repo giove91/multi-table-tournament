@@ -27,10 +27,16 @@ urlpatterns = [
     path('admin/createround/<int:pk>/', views.CreateRoundView.as_view(), name='createround'),
     path('admin/', admin_site.urls),
     # path('', cache_page(30)(views.IndexView.as_view()), name='index'),
-    path('', views.IndexView.as_view(), name='index'),
+    # path('', views.IndexView.as_view(), name='index'),
     path('registration/', views.RegistrationView.as_view(), name='registration'),
     path('thanks/', views.ThanksView.as_view(), name='thanks'),
 ]
+
+# public page
+if settings.PUBLIC_PAGE_CACHE_TIME is None:
+    urlpatterns.append(path('', views.IndexView.as_view(), name='index'))
+else:
+    urlpatterns.append(path('', cache_page(settings.PUBLIC_PAGE_CACHE_TIME)(views.IndexView.as_view()), name='index'))
 
 # debug toolbar
 if settings.DEBUG:

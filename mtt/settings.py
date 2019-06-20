@@ -150,3 +150,6 @@ CACHES = {
         'TIMEOUT': None,
     }
 }
+
+# Cache for the public page
+PUBLIC_PAGE_CACHE_TIME = None    # set this to None to have no cache, and to the number of seconds otherwise
