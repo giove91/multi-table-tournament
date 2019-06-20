@@ -21,9 +21,11 @@ A Tournament object has the following properties. They can be changed after the 
 
 Teams can be added and edited through the admin interface, at any time.
 A team has a (possibly empty) list of players.
+
 Do not delete a team after the first round has been generated, because this would mess up with its matches.
 Rather, at any time you can make a team _inactive_: inactive teams are not shown in the team scoreboard, and players of inactive teams are not shown in the player scoreboard.
-An inactive team can be made active again at any time.
+Inactive teams can be made active again at any time.
+Inactive teams are not paired when a new round is generated.
 
 
 ### Create tables
@@ -39,18 +41,19 @@ Tables can be added and edited also during the tournament. If the priority is ch
 ## Create new rounds
 
 After the Tournament object, the teams, and the tables are ready, you can create the first round.
-It is always possible to manually create a round with its matches, but usually you are going to _generate_ a round automatically (and possibly edit them afterwards).
+It is always possible to manually create a round with its matches, but usually you are going to _generate_ a round automatically (and possibly edit it afterwards).
 You can generate (or manually create) a new round even if not all matches of the previous rounds have been completed.
 
 A round has the following properties.
-- Number: newly generated rounds get the smallest natural number greater than the number of all existing rounds.
-- Visibility: this affects what is shown in the public page. If set to _Hide_, the round does not appear at all in the public page. If set to _Hide results_, the round appears in the public page, but the results of the matches are not shown (and they are ignored in the public scoreboards). If set to _Show_, the round appears in the public page together with all the results of completed matches.
+- Number: newly generated rounds get the smallest positive natural number greater than the number of all existing rounds.
+- Visibility: this affects what is shown in the public page. If set to _Hide_, the round does not appear at all in the public page. If set to _Hide results_, the round appears in the public page, but the results of the matches are not shown (and they do not affect the public scoreboards). If set to _Show_, the round appears in the public page together with all the results of completed matches.
 - Scheduled time: if set, this time appears in the public page.
 
 ### Matches
 
 A round also has a list of matches, which appear in the match list page.
-Each match has a type: normal (if it is between two teams) or bye (if it involves one single team, which is not paired for that round).
+Each match has a table, a type, and one or two teams.
+The type is either _Normal_ (if the match has two teams) or _Bye_ (if the match has only one team, which is not paired for that round).
 It also has a table.
 
 Matches can be manually added, edited, and deleted, after a round is generated.
@@ -59,11 +62,12 @@ Matches can be manually added, edited, and deleted, after a round is generated.
 ### Add results
 
 When a match is completed, you can add its result in the match page.
-You need to provide the score of both teams. The team with the highest score gets the match victory; if the two teams are tied, they get half a victory each.
+You need to provide the score of both teams (even when a score is 0), otherwise the result is not taken into account.
+The team with the highest score gets the match victory; if the two teams are tied, they get half a victory each.
 In the tournament scoreboard, teams are ranked based on the number of victories, and then (in case of ties) based on the sum of the scores.
 
-You can optionally add individual results for a match.
-This means that some of the players get points, which count for the individual scoreboard.
+You can optionally add player results for a match.
+This means that some of the players get points, which count for the player scoreboard.
 The sum of the scores of the players of a team (in a given match) need not be equal to the score of the team for that match.
 
 
