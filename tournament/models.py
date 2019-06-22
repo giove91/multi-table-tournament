@@ -108,6 +108,7 @@ class Tournament(models.Model):
     # registration parameters
     is_registration_open = models.BooleanField(default=False)
     max_teams = models.PositiveIntegerField(null=True, blank=True, default=None, help_text='Maximum number of allowed teams during registration. If no value is given, the number is unlimited.')
+    max_players_per_team = models.PositiveIntegerField(null=True, blank=True, default=0, help_text='Maximum number of allowed players per team during registration. If no value is given, the number is unlimited. If 0 is given, player registration is disabled.')
 
 
     def __str__(self):
@@ -118,6 +119,10 @@ class Tournament(models.Model):
 
     def can_register(self):
         return self.is_registration_open and (self.max_teams is None or Team.objects.count() < self.max_teams)
+
+    def can_register_player(self):
+        return self.is_registration_open and self.max_players_per_team > 0
+
 
     def team_scoreboard(self, public=False, fill_results=False):
         res = sum((match.team_scoreboard(public=public, fill_results=fill_results) for match in Match.objects.filter(round__tournament=self).prefetch_related('round', 'teamresult_set__team__player_set', 'teams')), Counter())
@@ -295,12 +300,12 @@ class Player(models.Model):
     is_captain = models.BooleanField(default=False)
 
     def _active(self):
-        return self.team.active
+        return self.team.active if self.team is not None else False
     _active.boolean = True
     active = property(_active)
 
     def __str__(self):
-        return '%s (%s)' % (self.name, self.team.name)
+        return '%s (%s)' % (self.name, self.team.name if self.team is not None else 'no team')
 
     class Meta:
         ordering = ['team', 'name']

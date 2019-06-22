@@ -2,7 +2,7 @@ import django
 from django.shortcuts import render
 from django.views import View
 from django.views.generic.base import TemplateView
-from django.views.generic.edit import FormView
+from django.views.generic.edit import FormView, CreateView
 
 
 from django.utils.decorators import method_decorator
@@ -103,6 +103,44 @@ class RegistrationView(FormView):
 
         return super().form_valid(form)
 
+
+class PlayerRegistrationView(FormView):
+    template_name = 'player_registration.html'
+    form_class = PlayerRegistrationForm
+    success_url = '/thanks/'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        tournament = self.request.current_tournament
+        context['tournament'] = tournament
+
+        return context
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['tournament'] = self.request.current_tournament
+        return kwargs
+
+
+    def form_valid(self, form):
+        # This method is called when valid form data has been POSTed.
+        # It should return an HttpResponse.
+
+        if self.request.current_tournament.can_register_player():
+            data = form.cleaned_data
+
+            # create team
+            try:
+                player = Player.objects.create(name=data['name'], team=data['team'])
+            except django.db.utils.IntegrityError:
+                # a team with this name already exists...
+                return redirect('player-registration')
+
+        else:
+            return redirect('player-registration')
+
+        return super().form_valid(form)
 
 
 class ThanksView(TemplateView):

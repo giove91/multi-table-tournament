@@ -29,6 +29,7 @@ urlpatterns = [
     # path('', cache_page(30)(views.IndexView.as_view()), name='index'),
     # path('', views.IndexView.as_view(), name='index'),
     path('registration/', views.RegistrationView.as_view(), name='registration'),
+    path('player-registration/', views.PlayerRegistrationView.as_view(), name='player-registration'),
     path('thanks/', views.ThanksView.as_view(), name='thanks'),
 ]
 

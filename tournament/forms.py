@@ -1,5 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
+from django.db.models import Count
 
 from .models import *
 
@@ -37,6 +38,31 @@ class RegistrationForm(forms.Form):
                 empty_value=None,
                 error_messages=ERROR_MESSAGES,
             )
+
+        self.fields['captcha'] = forms.IntegerField(
+            label='Captcha: quanti sono i numeri primi pari maggiori di 42?',
+            label_suffix='',
+            error_messages=ERROR_MESSAGES,
+            validators=[validate_captcha]
+        )
+
+
+class PlayerRegistrationForm(forms.Form):
+    name = forms.CharField(max_length=64, label='Nome', error_messages=ERROR_MESSAGES)
+
+    def __init__(self, *args, **kwargs):
+        tournament = kwargs.pop('tournament')
+        super().__init__(*args, **kwargs)
+
+        max_players_per_team = tournament.max_players_per_team
+        self.fields['team'] = forms.ModelChoiceField(
+            Team.objects.annotate(num_players=Count('player')).filter(num_players__lt=max_players_per_team),
+            label='Squadra',
+            required=False,
+            empty_label='(nessuna squadra)',
+            to_field_name='name',
+            error_messages=ERROR_MESSAGES
+        )
 
         self.fields['captcha'] = forms.IntegerField(
             label='Captcha: quanti sono i numeri primi pari maggiori di 42?',

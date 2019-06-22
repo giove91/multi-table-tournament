@@ -16,9 +16,15 @@
 <p>Non c'è alcun torneo.</p>
 {% endif %}
 
-{% if tournament.can_register %}
+{% if tournament.can_register or tournament.can_register_player %}
 <h3 class="my-4">Iscrizioni</h3>
+
+{% if tournament.can_register %}
 <p>Su <a href="{% url 'registration' %}">questa pagina</a> puoi iscrivere una nuova squadra.</p>
+{% endif %}
+{% if tournament.can_register_player %}
+<p>Su <a href="{% url 'player-registration' %}">questa pagina</a> puoi iscrivere un singolo giocatore.</p>
+{% endif %}
 {% endif %}
 
 
