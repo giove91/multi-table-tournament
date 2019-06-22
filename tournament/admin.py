@@ -101,25 +101,6 @@ class TableAdmin(admin.ModelAdmin):
     search_fields = ('name',)
 
 
-@admin.register(Round, site=admin_site)
-class RoundAdmin(DjangoObjectActions, admin.ModelAdmin):
-    # list_display = ('__str__', 'tournament', 'visibility', 'scheduled_time', 'num_matches', 'completed_matches', 'team_scores')
-    list_display = ('__str__', 'tournament', 'visibility', 'scheduled_time', 'num_matches', 'completed_matches')
-    list_filter = ('tournament',)
-
-    def view_matches(self, request, obj):
-        return HttpResponseRedirect(reverse('admin:tournament_match_changelist') + '?round__id__exact=%d' % obj.id)
-
-    view_matches.label = "View matches"
-    view_matches.short_description = "View list of matches of this round"
-
-    change_actions = ('view_matches',)
-
-    def team_scores(self, obj):
-        return score_counter_to_str(obj.team_scoreboard())
-
-
-
 class TeamResultInline(admin.TabularInline):
     model = TeamResult
     verbose_name_plural = 'teams'
@@ -153,3 +134,30 @@ class MatchAdmin(admin.ModelAdmin):
 
     def player_scores(self, obj):
         return score_counter_to_str(obj.player_scoreboard(), hide_secondary=True)
+
+
+class MatchInline(admin.TabularInline):
+    model = Match
+    extra = 0
+    # fields = ('type', 'table',)
+    show_change_link = True
+    # inlines = (TeamResultInline)
+
+
+@admin.register(Round, site=admin_site)
+class RoundAdmin(DjangoObjectActions, admin.ModelAdmin):
+    # list_display = ('__str__', 'tournament', 'visibility', 'scheduled_time', 'num_matches', 'completed_matches', 'team_scores')
+    list_display = ('__str__', 'tournament', 'visibility', 'scheduled_time', 'num_matches', 'completed_matches')
+    list_filter = ('tournament',)
+    inlines = (MatchInline,)
+
+    def view_matches(self, request, obj):
+        return HttpResponseRedirect(reverse('admin:tournament_match_changelist') + '?round__id__exact=%d' % obj.id)
+
+    view_matches.label = "View matches"
+    view_matches.short_description = "View list of matches of this round"
+
+    change_actions = ('view_matches',)
+
+    def team_scores(self, obj):
+        return score_counter_to_str(obj.team_scoreboard())
