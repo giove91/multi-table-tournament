@@ -99,7 +99,7 @@ def score_counter_to_str(counter, hide_secondary=False):
 
 
 class Tournament(models.Model):
-    name = models.CharField(max_length=1024)
+    name = models.CharField(max_length=255)
     creation_time = models.DateTimeField(auto_now_add=True)
     bye_score = models.DecimalField(max_digits=4, decimal_places=1, default=3, help_text='Score to assign for a bye.')
     default_round_visibility = models.CharField(max_length=2, choices=VISIBILITY_CHOICES, default=SHOW, help_text='Default visibility of newly generated rounds.')
@@ -318,7 +318,7 @@ def validate_priority(value):
 
 
 class Table(models.Model):
-    name = models.CharField(max_length=256)
+    name = models.CharField(max_length=255)
     priority = models.IntegerField(default=100, validators=[validate_priority], help_text='A number between 0 and 100. Tables with higher priority are preferred when creating a new turn.')
 
 
