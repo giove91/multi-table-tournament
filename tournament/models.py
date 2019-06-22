@@ -274,7 +274,7 @@ class Tournament(models.Model):
 
 
 class Team(models.Model):
-    name = models.CharField(max_length=1024, unique=True)
+    name = models.CharField(max_length=255, unique=True)
     active = models.BooleanField(default=True, help_text='Inactive teams are not considered for future turns and do not appear in the scoreboard.')
 
     def __str__(self):
@@ -286,7 +286,7 @@ class Team(models.Model):
 
 
 class Player(models.Model):
-    name = models.CharField(max_length=256)
+    name = models.CharField(max_length=255)
     team = models.ForeignKey(Team, on_delete=models.CASCADE, blank=True, null=True, default=None)
 
     phone_regex = RegexValidator(regex=r'^\+?1?\d{9,15}$', message="Phone number must be entered in the format: '+999999999'. Up to 15 digits allowed.")
