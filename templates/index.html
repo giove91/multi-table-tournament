@@ -17,6 +17,34 @@
 {% endif %}
 
 
+{% if team_scoreboard %}
+<h3 class="my-4">Classifica squadre</h3>
+
+<div class="table-responsive">
+<table class="table table-striped">
+<thead>
+    <tr>
+    <th scope="col" class="text-center">#</th>
+    <th scope="col">Squadra</th>
+    <th scope="col" class="text-center">Incontri vinti</th>
+    <th scope="col" class="text-center">Partite vinte</th>
+    </tr>
+</thead>
+<tbody>
+{% for team, score, rank in team_scoreboard %}
+    <tr>
+        <th scope="row" class="text-center">{{ rank }}</th>
+        <td class="clickable" data-toggle="modal" data-target="#team-modal-{{ team.id }}">{{ team }}</td>
+        <td class="text-center">{{ score.primary }} / {{ score.num_matches }}</td>
+        <td class="text-center">{{ score.secondary }}</td>
+    </tr>
+{% endfor %}
+</tbody>
+</table>
+</div>
+{% endif %}
+
+
 {% for round in rounds %}
 <h3 class="my-4">Turno {{ round.number }}{% if round.scheduled_time %}
 <small class="text-muted">({{ round.scheduled_time|date:"l" }} alle {{ round.scheduled_time|date:"G:i" }})</small>{% endif %}</h3>
@@ -44,32 +72,34 @@
 {% endfor %}
 
 
-{% if team_scoreboard %}
-<h3 class="my-4">Classifica squadre</h3>
+{% if player_scoreboard %}
+<h3 class="my-4">Classifica individuale</h3>
 
 <div class="table-responsive">
 <table class="table table-striped">
 <thead>
     <tr>
     <th scope="col" class="text-center">#</th>
+    <th scope="col">Giocatore</th>
     <th scope="col">Squadra</th>
-    <th scope="col" class="text-center">Incontri</th>
-    <th scope="col" class="text-center">Partite</th>
+    <th scope="col" class="text-center">Partite vinte</th>
     </tr>
 </thead>
 <tbody>
-{% for team, score, rank in team_scoreboard %}
+{% for player, score, rank in player_scoreboard %}
     <tr>
         <th scope="row" class="text-center">{{ rank }}</th>
-        <td class="clickable" data-toggle="modal" data-target="#team-modal-{{ team.id }}">{{ team }}</td>
-        <td class="text-center">{{ score.primary }} / {{ score.num_matches }}</td>
-        <td class="text-center">{{ score.secondary }}</td>
+        <td>{{ player.name }}</td>
+        <td>{{ player.team.name }}</td>
+        <td class="text-center">{{ score.primary }}</td>
+        {# <td class="text-center">{{ score.num_matches }}</td> #}
     </tr>
 {% endfor %}
 </tbody>
 </table>
 </div>
 {% endif %}
+
 
 {# Team modals #}
 {% for team in teams %}
@@ -91,33 +121,5 @@
   </div>
 </div>
 {% endfor %}
-
-{% if player_scoreboard %}
-<h3 class="my-4">Classifica individuale</h3>
-
-<div class="table-responsive">
-<table class="table table-striped">
-<thead>
-    <tr>
-    <th scope="col" class="text-center">#</th>
-    <th scope="col">Giocatore</th>
-    <th scope="col">Squadra</th>
-    <th scope="col" class="text-center">Partite</th>
-    </tr>
-</thead>
-<tbody>
-{% for player, score, rank in player_scoreboard %}
-    <tr>
-        <th scope="row" class="text-center">{{ rank }}</th>
-        <td>{{ player.name }}</td>
-        <td>{{ player.team.name }}</td>
-        <td class="text-center">{{ score.primary }}</td>
-        {# <td class="text-center">{{ score.num_matches }}</td> #}
-    </tr>
-{% endfor %}
-</tbody>
-</table>
-</div>
-{% endif %}
 
 {% endblock %}
