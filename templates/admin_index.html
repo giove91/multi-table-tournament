@@ -53,10 +53,10 @@
 </caption>
     <tr>
         <th scope="row">Current round: <a href="{% url 'admin:tournament_round_change' current_round.pk %}" class="rchangelink">{{ current_round }}</a></th>
-        <td>Visibility: {{ current_round.get_visibility_display }}</td>        
+        <td>Visibility: {{ current_round.get_visibility_display }}</td>
         <td>Time: {{ current_round.scheduled_time }}</td>
     </tr>
-    
+
     {% for match in current_round.match_set.all %}
         <tr>
             <td><a href="{% url 'admin:tournament_match_change' match.pk %}">{{ match }}</a></td>
