@@ -5,6 +5,8 @@ from django.http import HttpResponseRedirect
 from django.contrib.admin import AdminSite
 from django.contrib.auth.models import User, Group
 
+# from django.contrib.auth.admin import UserAdmin
+
 from django_object_actions import DjangoObjectActions # https://github.com/crccheck/django-object-actions
 
 from .models import *
@@ -18,8 +20,14 @@ class MTTAdminSite(AdminSite):
 
 admin_site = MTTAdminSite(name='mttadmin')
 
-admin_site.register(User)
-admin_site.register(Group)
+# admin_site.register(User)
+# admin_site.register(Group)
+
+
+# @admin.register(User, site=admin_site)
+# class UserAdmin(admin.ModelAdmin):
+#     list_display = ('username', 'is_active', 'is_staff', 'is_superuser')
+#     fields = ('username', 'is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')
 
 
 @admin.register(Tournament, site=admin_site)
