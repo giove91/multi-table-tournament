@@ -4,9 +4,9 @@
 {% block title %}Iscrizione{% endblock %}
 
 {% block content %}
-<h1>{{ tournament.name }} - Iscrizione squadra</h1>
-
 <div class="my-4">
+<h3>Iscrizione squadra</h3>
+
 {% if tournament.can_register %}
 <form method="post">
     {% csrf_token %}

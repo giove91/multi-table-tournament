@@ -4,13 +4,30 @@
 {% block title %}{{ tournament.name }}{% endblock %}
 
 
-{% block content %}
+{% block navbar %}
+<ul class="navbar-nav ml-auto">
+    {% if team_scoreboard %}
+    <li class="nav-item">
+        <a class="nav-link" href="#team-scoreboard">Classifica<br />squadre</a>
+    </li>
+    {% endif %}
 
-{% if tournament %}
-<h1>{{ tournament.name }}</h1>
-{% else %}
-<p>Non c'è alcun torneo.</p>
-{% endif %}
+    {% if rounds %}
+    <li class="nav-item">
+        <a class="nav-link" href="#rounds">Turni</a>
+    </li>
+    {% endif %}
+
+    {% if player_scoreboard %}
+    <li class="nav-item">
+        <a class="nav-link" href="#player-scoreboard">Classifica<br />individuale</a>
+    </li>
+    {% endif %}
+</ul>
+{% endblock %}
+
+
+{% block content %}
 
 {% if tournament.can_register or tournament.can_register_player %}
 <h3 class="my-4">Iscrizioni</h3>
@@ -26,7 +43,7 @@ Su <a href="{% url 'player-registration' %}">questa pagina</a> puoi iscrivere un
 
 
 {% if team_scoreboard %}
-<h3 class="my-4">Classifica squadre</h3>
+<h3 class="my-4 anchor" id="team-scoreboard">Classifica squadre</h3>
 
 <div class="table-responsive">
 <table class="table table-striped">
@@ -54,7 +71,7 @@ Su <a href="{% url 'player-registration' %}">questa pagina</a> puoi iscrivere un
 
 
 {% for round in rounds %}
-<h3 class="my-4">Turno {{ round.number }}{% if round.scheduled_time %}
+<h3 class="my-4 anchor" {% if forloop.first %}id="rounds"{% endif %}>Turno {{ round.number }}{% if round.scheduled_time %}
 <small class="text-muted">({{ round.scheduled_time|date:"l" }} alle {{ round.scheduled_time|date:"G:i" }})</small>{% endif %}</h3>
 
 <div class="table-responsive">
@@ -81,7 +98,7 @@ Su <a href="{% url 'player-registration' %}">questa pagina</a> puoi iscrivere un
 
 
 {% if player_scoreboard %}
-<h3 class="my-4">Classifica individuale</h3>
+<h3 class="my-4 anchor" id="player-scoreboard">Classifica individuale</h3>
 
 <div class="table-responsive">
 <table class="table table-striped">

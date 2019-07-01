@@ -12,3 +12,23 @@ ul.errorlist {
     list-style-type: none;
     background: #ff9999;
 }
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* .anchor {
+    display: block;
+    position: relative;
+    top: -250px;
+    visibility: hidden;
+} */
+
+h3::before {
+  display: block;
+  content: " ";
+  margin-top: -100px;
+  height: 100px;
+  visibility: hidden;
+  pointer-events: none;
+}
