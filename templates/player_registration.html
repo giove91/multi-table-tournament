@@ -5,7 +5,7 @@
 
 {% block content %}
 <div class="my-4">
-<h3>Iscrizione singolo giocatore</h3>
+<h3 class="mb-4">Iscrizione singolo giocatore</h3>
 
 {% if tournament.can_register_player %}
 <p>Puoi registrarti senza squadra, oppure aggiungerti a una squadra {% if tournament.max_players_per_team %} con meno di {{ tournament.max_players_per_team }} giocatori{% endif %}.<br />

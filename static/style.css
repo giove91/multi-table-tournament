@@ -17,18 +17,62 @@ html {
   scroll-behavior: smooth;
 }
 
-/* .anchor {
-    display: block;
-    position: relative;
-    top: -250px;
-    visibility: hidden;
-} */
+body {
+    font-family: 'Muli', sans-serif;
+}
 
 h3::before {
   display: block;
   content: " ";
-  margin-top: -100px;
-  height: 100px;
+  margin-top: -140px;
+  height: 140px;
   visibility: hidden;
   pointer-events: none;
+}
+
+.navbar-brand {
+    padding-left: 12px;
+}
+
+.navbar-content {
+    padding-right: 12px;
+}
+
+.navbar-img {
+    height: 40px;
+    margin-bottom: 5px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.navbar-button div {
+    color: white;
+    line-height: 120%;
+}
+
+.nav-link-registration:hover *{
+    filter: brightness(0.5) sepia(1) saturate(10000%) hue-rotate(60deg) brightness(3.5);
+}
+
+.nav-link-team:hover *{
+    filter: brightness(0.5) sepia(1) saturate(10000%) hue-rotate(0deg);
+}
+
+.nav-link-rounds:hover *{
+    filter: brightness(0.5) sepia(1) saturate(10000%) hue-rotate(120deg) brightness(2);
+}
+
+.nav-link-player:hover *{
+    filter: brightness(0.5) sepia(1) saturate(10000%) hue-rotate(270deg) brightness(4);
+}
+
+
+.content {
+    padding-top: 80px;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    /* background-color: rgb(236, 252, 255); */
+    background-color: rgb(236, 244, 255);
 }

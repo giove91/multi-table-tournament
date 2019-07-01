@@ -38,7 +38,7 @@ class TournamentAdmin(DjangoObjectActions, admin.ModelAdmin):
 
     fieldsets = (
         (None, {
-            'fields': ('name', 'bye_score')
+            'fields': ('name', 'short_name', 'bye_score')
         }),
         ('Public page', {
             'fields': ('default_round_visibility', 'shown_players'),

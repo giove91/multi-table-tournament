@@ -6,21 +6,45 @@
 
 {% block navbar %}
 <ul class="navbar-nav ml-auto">
+    <!-- <li class="nav-item">
+        <div class="card">
+          <img class="card-img-top navbar-img" src="{% static 'team.png' %}" alt="Card image cap">
+          <div class="card-body">
+            <h5 class="card-title">Card title</h5>
+          </div>
+        </div>
+    </li> -->
+    {% if tournament.can_register or tournament.can_register_player %}
+    <li class="nav-item">
+        <a class="nav-link nav-link-registration navbar-button px-2" href="#registration">
+            <img class="navbar-img" src="{% static 'registration.png' %}" /><div class="text-center">Iscrizioni</div>
+        </a>
+    </li>
+    {% endif %}
+
     {% if team_scoreboard %}
     <li class="nav-item">
-        <a class="nav-link" href="#team-scoreboard">Classifica<br />squadre</a>
+        <a class="nav-link nav-link-team navbar-button px-2" href="#team-scoreboard">
+            <img class="navbar-img" src="{% static 'team.png' %}" /><div class="text-center">Classifica<br />squadre</div>
+        </a>
     </li>
     {% endif %}
 
     {% if rounds %}
     <li class="nav-item">
-        <a class="nav-link" href="#rounds">Turni</a>
+        <a class="nav-link nav-link-rounds navbar-button px-2" href="#rounds">
+            <img class="navbar-img" src="{% static 'clock.png' %}" />
+            <div class="text-center navbar-button pt-2">Turni</div>
+        </a>
     </li>
     {% endif %}
 
     {% if player_scoreboard %}
     <li class="nav-item">
-        <a class="nav-link" href="#player-scoreboard">Classifica<br />individuale</a>
+        <a class="nav-link nav-link-player navbar-button px-2" href="#player-scoreboard">
+            <img class="navbar-img" src="{% static 'player.png' %}" />
+            <div class="text-center navbar-button">Classifica<br />individuale</div>
+        </a>
     </li>
     {% endif %}
 </ul>
@@ -30,7 +54,7 @@
 {% block content %}
 
 {% if tournament.can_register or tournament.can_register_player %}
-<h3 class="my-4">Iscrizioni</h3>
+<h3 class="my-4" id="registration">Iscrizioni</h3>
 <p>
 {% if tournament.can_register %}
 Su <a href="{% url 'registration' %}">questa pagina</a> puoi iscrivere una nuova squadra.</br>
@@ -39,6 +63,10 @@ Su <a href="{% url 'registration' %}">questa pagina</a> puoi iscrivere una nuova
 Su <a href="{% url 'player-registration' %}">questa pagina</a> puoi iscrivere un singolo giocatore.
 {% endif %}
 </p>
+
+{% if team_scoreboard or rounds or player_scoreboard %}
+<hr />
+{% endif %}
 {% endif %}
 
 
@@ -67,6 +95,10 @@ Su <a href="{% url 'player-registration' %}">questa pagina</a> puoi iscrivere un
 </tbody>
 </table>
 </div>
+
+{% if rounds or player_scoreboard %}
+<hr />
+{% endif %}
 {% endif %}
 
 
@@ -95,6 +127,9 @@ Su <a href="{% url 'player-registration' %}">questa pagina</a> puoi iscrivere un
 </table>
 </div>
 {% endfor %}
+{% if rounds and player_scoreboard %}
+<hr />
+{% endif %}
 
 
 {% if player_scoreboard %}

@@ -100,6 +100,7 @@ def score_counter_to_str(counter, hide_secondary=False):
 
 class Tournament(models.Model):
     name = models.CharField(max_length=255)
+    short_name = models.CharField(max_length=255, null=True, blank=True, default=None, help_text='Name to show on mobile devices.')
     creation_time = models.DateTimeField(auto_now_add=True)
     bye_score = models.DecimalField(max_digits=4, decimal_places=1, default=3, help_text='Score to assign for a bye.')
     default_round_visibility = models.CharField(max_length=2, choices=VISIBILITY_CHOICES, default=SHOW, help_text='Default visibility of newly generated rounds.')
