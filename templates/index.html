@@ -5,15 +5,8 @@
 
 
 {% block navbar %}
+<!-- <ul class="navbar-nav ml-auto d-none d-lg-block"> -->
 <ul class="navbar-nav ml-auto">
-    <!-- <li class="nav-item">
-        <div class="card">
-          <img class="card-img-top navbar-img" src="{% static 'team.png' %}" alt="Card image cap">
-          <div class="card-body">
-            <h5 class="card-title">Card title</h5>
-          </div>
-        </div>
-    </li> -->
     {% if tournament.can_register or tournament.can_register_player %}
     <li class="nav-item">
         <a class="nav-link nav-link-registration navbar-button px-2" href="#registration">

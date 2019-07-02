@@ -6,7 +6,7 @@
     color: rgb(238, 109, 1);
 }
 
-.clickable-1:hover {
+/* .clickable-1:hover {
     color: white;
     filter: brightness(0.5) sepia(1) saturate(10000%) hue-rotate(60deg) brightness(2.5);
 }
@@ -24,7 +24,7 @@
 .clickable-4:hover {
     color: white;
     filter: brightness(0.5) sepia(1) saturate(10000%) hue-rotate(270deg) brightness(4);
-}
+} */
 
 ul.errorlist {
     list-style-type: none;
@@ -50,16 +50,26 @@ h3::before {
   pointer-events: none;
 }
 
-/* .navbar {
-    background-color: black;
-} */
 
-.navbar-brand {
-    padding-left: 12px;
+.tournament-name h1 {
+    color: white;
+    padding-right: 5px;
 }
 
-.navbar-content {
-    padding-right: 12px;
+@media only all and (min-width: 576px) {
+    .tournament-name h1 {
+        padding-left: 6px;
+    }
+
+    .navbar-content {
+        padding-right: 12px;
+    }
+}
+
+@media only screen and (max-width: 575px) {
+    .tournament-name {
+        padding-left: 1px !important;
+    }
 }
 
 .navbar-img {

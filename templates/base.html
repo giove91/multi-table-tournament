@@ -11,13 +11,12 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
-    <link rel="stylesheet" type="text/css" href="{% static "style.css" %}?v=2">
+    <link rel="stylesheet" type="text/css" href="{% static "style.css" %}?v=3">
 
     <title>{% block title %}{% endblock %}</title>
 
     <link rel="shortcut icon" type="image/png" href="{% static 'favicon.png' %}"/>
 
-    {# <link href="https://fonts.googleapis.com/css?family=Lato|Muli|Open+Sans|Ubuntu&display=swap" rel="stylesheet"> #}
     <link href="https://fonts.googleapis.com/css?family=Muli&display=swap" rel="stylesheet">
 
     {% block head %}{% endblock %}
@@ -27,17 +26,22 @@
 
 <nav class="navbar navbar-expand navbar-dark bg-dark fixed-top" id="mainNav">
     <div class="container">
-        <a class="navbar-brand" href="{% url 'index' %}">
+        <!-- <a class="navbar-brand" href="{% url 'index' %}">
             <h1 class="text-nowrap d-none d-md-block">{% if tournament %}{{ tournament.name }}{% else %}Multi-table tournament{% endif %}</h1>
-            <h1 class="text-nowrap d-md-none">{% if tournament.short_name %}{{ tournament.short_name }}{% elif tournament %}{{ tournament.name }}{% else %}MTT{% endif %}</h1>
-        </a>
+            <h1 class="d-md-none">{% if tournament.short_name %}{{ tournament.short_name }}{% elif tournament %}{{ tournament.name }}{% else %}MTT{% endif %}</h1>
+        </a> -->
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
         <div class="collapse navbar-collapse navbar-content" id="navbarSupportedContent">
             <ul class="navbar-nav mr-auto">
-
+                <li class="nav-item">
+                    <a class="nav-link tournament-name" href="{% url 'index' %}">
+                    <h1 class="d-none d-md-block">{% if tournament %}{{ tournament.name }}{% else %}Multi-table tournament{% endif %}</h1>
+                    <h1 class="d-md-none">{% if tournament.short_name %}{{ tournament.short_name }}{% elif tournament %}{{ tournament.name }}{% else %}MTT{% endif %}</h1>
+                    </a>
+                </li>
             </ul>
             {% block navbar %}{% endblock %}
         </div>
