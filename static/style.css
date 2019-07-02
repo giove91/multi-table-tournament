@@ -2,6 +2,30 @@
     cursor: pointer;
 }
 
+.clickable:hover {
+    color: rgb(238, 109, 1);
+}
+
+.clickable-1:hover {
+    color: white;
+    filter: brightness(0.5) sepia(1) saturate(10000%) hue-rotate(60deg) brightness(2.5);
+}
+
+.clickable-2:hover {
+    color: white;
+    filter: brightness(0.5) sepia(1) saturate(10000%) hue-rotate(0deg);
+}
+
+.clickable-3:hover {
+    color: white;
+    filter: brightness(0.5) sepia(1) saturate(10000%) hue-rotate(120deg) brightness(1);
+}
+
+.clickable-4:hover {
+    color: white;
+    filter: brightness(0.5) sepia(1) saturate(10000%) hue-rotate(270deg) brightness(4);
+}
+
 ul.errorlist {
     list-style-type: none;
     background: #ff9999;
@@ -13,8 +37,8 @@ html {
 
 body {
     font-family: 'Muli', sans-serif;
-    background-color: rgb(20, 20, 32);
-    color: white;
+    background-color: rgb(240, 248, 255);
+    /* color: white; */
 }
 
 h3::before {
@@ -26,9 +50,9 @@ h3::before {
   pointer-events: none;
 }
 
-.navbar {
+/* .navbar {
     background-color: black;
-}
+} */
 
 .navbar-brand {
     padding-left: 12px;
@@ -72,12 +96,18 @@ h3::before {
     padding-top: 80px;
 }
 
-td, th {
-  border-top:1px solid rgb(65, 69, 122) !important;
+.table thead th {
+    background-color: white;
 }
 
-.table-striped tbody tr:nth-of-type(odd) {
-    /* background-color: rgb(236, 252, 255); */
-    /* background-color: rgb(236, 244, 255); */
-    background-color: rgb(25, 25, 32);
+/* td, th {
+  border-top:1px solid rgb(65, 69, 122) !important;
+} */
+
+/* .table-striped tbody tr:nth-of-type(odd) {
+    background-color: rgb(230, 240, 255);
+} */
+
+a.link:hover {
+    color: rgb(238, 109, 1);
 }
