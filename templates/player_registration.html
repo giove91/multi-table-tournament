@@ -4,13 +4,12 @@
 {% block title %}Iscrizione{% endblock %}
 
 {% block content %}
-<h1>{{ tournament.name }} - Iscrizione singolo giocatore</h1>
-
 <div class="my-4">
+<h3 class="mb-4">Iscrizione singolo giocatore</h3>
 
 {% if tournament.can_register_player %}
 <p>Puoi registrarti senza squadra, oppure aggiungerti a una squadra {% if tournament.max_players_per_team %} con meno di {{ tournament.max_players_per_team }} giocatori{% endif %}.<br />
-Puoi consultare la lista delle squadre sulla <a href="{% url 'index' %}">pagina principale</a> (clicca su una squadra per vedere la lista dei suoi giocatori).</p>
+Puoi consultare la lista delle squadre sulla <a href="{% url 'index' %}" class="link">pagina principale</a> (clicca su una squadra per vedere la lista dei suoi giocatori).</p>
 
 <form method="post">
     {% csrf_token %}

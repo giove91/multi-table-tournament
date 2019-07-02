@@ -4,15 +4,15 @@
 {% block title %}Iscrizione{% endblock %}
 
 {% block content %}
-<h1>{{ tournament.name }} - Iscrizione</h1>
-
 <div class="my-4">
+<h3 class="mb-4">Iscrizione</h3>
+
 <p>L'iscrizione è avvenuta con successo. Grazie!<br />
 Se hai bisogno di effettuare delle modifiche, contatta gli organizzatori.</p>
 </div>
 
 <div class="my-4">
-<p>Ora puoi tornare alla <a href="{% url 'index' %}">pagina principale</a>.</p>
+<p>Ora puoi tornare alla <a href="{% url 'index' %}" class="link">pagina principale</a>.</p>
 </div>
 
 {% endblock %}
