@@ -1,9 +1,3 @@
-.rchangelink, .inlinerchangelink {
-    padding-right: 16px;
-    background: url(admin/img/icon-changelink.svg) 0 1px no-repeat;
-    background-position: 100%;
-}
-
 .clickable {
     cursor: pointer;
 }
@@ -19,6 +13,8 @@ html {
 
 body {
     font-family: 'Muli', sans-serif;
+    background-color: rgb(20, 20, 32);
+    color: white;
 }
 
 h3::before {
@@ -28,6 +24,10 @@ h3::before {
   height: 140px;
   visibility: hidden;
   pointer-events: none;
+}
+
+.navbar {
+    background-color: black;
 }
 
 .navbar-brand {
@@ -72,7 +72,12 @@ h3::before {
     padding-top: 80px;
 }
 
+td, th {
+  border-top:1px solid rgb(65, 69, 122) !important;
+}
+
 .table-striped tbody tr:nth-of-type(odd) {
     /* background-color: rgb(236, 252, 255); */
-    background-color: rgb(236, 244, 255);
+    /* background-color: rgb(236, 244, 255); */
+    background-color: rgb(25, 25, 32);
 }
