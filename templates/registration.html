@@ -14,7 +14,7 @@
     <input type="submit" value="Iscrivi questa squadra">
 </form>
 {% else %}
-<p>Le iscrizioni sono chiuse.<br />
+<p>{% if tournament.is_registration_open %}È stato raggiunto il numero massimo di squadre.{% else %}Le iscrizioni sono chiuse.{% endif %}<br />
 Puoi tornare alla <a href="{% url 'index' %}">pagina principale</a>.</p>
 {% endif %}
 </div>

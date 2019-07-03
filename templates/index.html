@@ -7,7 +7,7 @@
 {% block navbar %}
 <!-- <ul class="navbar-nav ml-auto d-none d-lg-block"> -->
 <ul class="navbar-nav ml-auto">
-    {% if tournament.can_register or tournament.can_register_player %}
+    {% if tournament.is_registration_open %}
     <li class="nav-item">
         <a class="nav-link nav-link-registration navbar-button px-2" href="#registration">
             <img class="navbar-img" src="{% static 'registration.png' %}" /><div class="text-center">Iscrizioni</div>
@@ -46,14 +46,16 @@
 
 {% block content %}
 
-{% if tournament.can_register or tournament.can_register_player %}
+{% if tournament.is_registration_open %}
 <h3 class="my-4" id="registration">Iscrizioni</h3>
 <p>
 {% if tournament.can_register %}
-Su <a href="{% url 'registration' %}" class="link">questa pagina</a> puoi iscrivere una nuova squadra.</br>
+Su <a href="{% url 'registration' %}" class="link">questa pagina</a> puoi iscrivere una nuova squadra.<br />
+{% else %}
+È stato raggiunto il numero massimo di squadre.<br />
 {% endif %}
 {% if tournament.can_register_player %}
-Su <a href="{% url 'player-registration' %}" class="link">questa pagina</a> puoi iscrivere un singolo giocatore.
+Su <a href="{% url 'player-registration' %}" class="link">questa pagina</a> puoi aggiungerti a una squadra già creata.
 {% endif %}
 </p>
 
