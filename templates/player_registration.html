@@ -8,14 +8,20 @@
 <h3 class="mb-4">Iscrizione singolo giocatore</h3>
 
 {% if tournament.can_register_player %}
-<p>Puoi registrarti senza squadra, oppure aggiungerti a una squadra {% if tournament.max_players_per_team %} con meno di {{ tournament.max_players_per_team }} giocatori{% endif %}.<br />
-Puoi consultare la lista delle squadre sulla <a href="{% url 'index' %}" class="link">pagina principale</a> (clicca su una squadra per vedere la lista dei suoi giocatori).</p>
+
+{% if available_teams %}
+<p>Puoi aggiungerti a una squadra{% if tournament.max_players_per_team %} con meno di {{ tournament.max_players_per_team }} giocatori{% endif %}.<br />
+La lista delle squadre è consultabile sulla <a href="{% url 'index' %}" class="link">pagina principale</a> (clicca su una squadra per vedere la lista dei suoi giocatori).</p>
 
 <form method="post">
     {% csrf_token %}
     {{ form.as_p }}
     <input type="submit" value="Iscriviti">
 </form>
+{% else %}
+<p>Al momento non ci sono squadre{% if tournament.max_players_per_team %} con meno di {{ tournament.max_players_per_team }} giocatori{% endif %}.<br />
+Puoi tornare alla <a href="{% url 'index' %}">pagina principale</a>.</p>
+{% endif %}
 {% else %}
 <p>Al momento non è possibile iscrivere nuovi giocatori.<br />
 Puoi tornare alla <a href="{% url 'index' %}">pagina principale</a>.</p>

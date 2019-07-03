@@ -109,7 +109,7 @@ class Tournament(models.Model):
     # registration parameters
     is_registration_open = models.BooleanField(default=False)
     max_teams = models.PositiveIntegerField(null=True, blank=True, default=None, help_text='Maximum number of allowed teams during registration. If no value is given, the number is unlimited.')
-    max_players_per_team = models.PositiveIntegerField(null=True, blank=True, default=0, help_text='Maximum number of allowed players per team during registration. If no value is given, the number is unlimited. If 0 is given, player registration is disabled.')
+    max_players_per_team = models.PositiveIntegerField(null=True, blank=True, default=0, help_text='Maximum number of allowed players per team during registration. If no value is given, the number is unlimited (probably unsupported!). If 0 is given, player registration is disabled.')    # TODO
 
 
     def __str__(self):

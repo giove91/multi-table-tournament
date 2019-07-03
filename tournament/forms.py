@@ -58,8 +58,8 @@ class PlayerRegistrationForm(forms.Form):
         self.fields['team'] = forms.ModelChoiceField(
             Team.objects.annotate(num_players=Count('player')).filter(num_players__lt=max_players_per_team),
             label='Squadra',
-            required=False,
-            empty_label='(nessuna squadra)',
+            # required=False,
+            # empty_label='(nessuna squadra)',
             to_field_name='name',
             error_messages=ERROR_MESSAGES
         )

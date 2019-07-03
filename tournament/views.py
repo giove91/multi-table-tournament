@@ -115,6 +115,9 @@ class PlayerRegistrationView(FormView):
         tournament = self.request.current_tournament
         context['tournament'] = tournament
 
+        # TODO: avoid duplicate code (see forms.PlayerRegistrationForm)
+        context['available_teams'] = Team.objects.annotate(num_players=Count('player')).filter(num_players__lt=tournament.max_players_per_team)
+
         return context
 
     def get_form_kwargs(self):
