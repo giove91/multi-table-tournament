@@ -46,6 +46,14 @@
 
 {% block content %}
 
+{% if tournament.description %}
+<div class="description pt-3">
+{{ tournament.description|safe }}
+<hr />
+</div>
+{% endif %}
+
+
 {% if tournament.is_registration_open %}
 <h3 class="my-4" id="registration">Iscrizioni</h3>
 <p>
