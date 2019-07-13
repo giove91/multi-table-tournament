@@ -20,6 +20,9 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    print('Probability of victory of stronger team: {0:.2f}'.format(args.alpha))
+    print('Probability of victory of weaker team: {0:.2f}'.format(args.beta))
+
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'mtt.settings')
     django.setup()
 
@@ -44,6 +47,8 @@ if __name__ == '__main__':
     s = list(range(len(teams)))
     random.shuffle(s)
     strengths = {team: s[i] for i, team in enumerate(teams)}
+
+    print('Teams sorted by decreasing strength: {}'.format(' '.join(team.name for team in sorted(teams, key=lambda team: -strengths[team]))))
 
     # run simulations
     stats = Counter()
