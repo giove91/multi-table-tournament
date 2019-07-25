@@ -163,10 +163,11 @@ class TablesView(ListView):
     template_name = 'tables.html'
     model = Table
 
-    # def get_context_data(self, **kwargs):
-    #     context = super().get_context_data(**kwargs)
-    #     context['now'] = timezone.now()
-    #     return context
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        tournament = self.request.current_tournament
+        context['tournament'] = tournament
+        return context
 
 
 
