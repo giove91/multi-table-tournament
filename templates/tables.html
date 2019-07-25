@@ -22,7 +22,7 @@
 {% for table in object_list %}
     <tr>
         <th scope="row">{{ table.name }}</th>
-        <td>{{ table.description }}</td>
+        <td>{{ table.description|default_if_none:"" }}</td>
     </tr>
 {% endfor %}
 </table>
