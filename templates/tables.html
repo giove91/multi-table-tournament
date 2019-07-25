@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+{% block title %}Lista dei tavoli{% endblock %}
+
+{% block content %}
+<div class="my-4">
+<h3 class="mb-4">Lista dei tavoli</h3>
+
+{% comment %}
+<ul>
+{% for table in object_list %}
+    <li><b>{{ table }}</b> {{ table.description }}</li>
+{% empty %}
+    <li>Non ci sono tavoli.</li>
+{% endfor %}
+</ul>
+{% endcomment %}
+
+<div class="table-responsive">
+<table class="table">
+{% for table in object_list %}
+    <tr>
+        <th scope="row">{{ table.name }}</th>
+        <td>{{ table.description }}</td>
+    </tr>
+{% endfor %}
+</table>
+</div>
+
+</div>
+
+{% endblock %}
