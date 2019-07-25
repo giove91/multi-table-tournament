@@ -329,6 +329,7 @@ def validate_priority(value):
 class Table(models.Model):
     name = models.CharField(max_length=255)
     priority = models.IntegerField(default=100, validators=[validate_priority], help_text='A number between 0 and 100. Tables with higher priority are preferred when creating a new turn.')
+    description = models.TextField(null=True, blank=True, default=None)
 
 
     def __str__(self):

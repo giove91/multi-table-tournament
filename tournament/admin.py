@@ -103,7 +103,7 @@ class PlayerAdmin(admin.ModelAdmin):
 
 @admin.register(Table, site=admin_site)
 class TableAdmin(admin.ModelAdmin):
-    list_display = ('name', 'priority', 'num_matches')
+    list_display = ('name', 'priority', 'description', 'num_matches')
     list_editable = ('priority',)
 
     search_fields = ('name',)

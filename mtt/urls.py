@@ -31,6 +31,7 @@ urlpatterns = [
     path('registration/', views.RegistrationView.as_view(), name='registration'),
     path('player-registration/', views.PlayerRegistrationView.as_view(), name='player-registration'),
     path('thanks/', views.ThanksView.as_view(), name='thanks'),
+    path('tables/', views.TablesView.as_view(), name='tables'),
 ]
 
 # public page
