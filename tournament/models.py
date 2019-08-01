@@ -108,6 +108,7 @@ class Tournament(models.Model):
     description = models.TextField(null=True, blank=True, default=None, help_text='This appears at the beginning of the public page. You can use HTML tags.')
     default_round_visibility = models.CharField(max_length=2, choices=VISIBILITY_CHOICES, default=SHOW, help_text='Default visibility of newly generated rounds.')
     shown_players = models.PositiveIntegerField(null=True, blank=True, default=0, help_text='Number of players to show in the scoreboard. If no value is given, all players are shown. If 0, the player scoreboard is not shown.')
+    player_scoreboard_description = models.TextField(null=True, blank=True, default=None, help_text='This appears at the beginning of the player scoreboard. You can use HTML tags.')
 
     # registration parameters
     is_registration_open = models.BooleanField(default=False)

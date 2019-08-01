@@ -138,6 +138,13 @@ Su <a href="{% url 'player-registration' %}" class="link">questa pagina</a> puoi
 {% if player_scoreboard %}
 <h3 class="my-4 anchor" id="player-scoreboard">Classifica individuale</h3>
 
+{% if tournament.player_scoreboard_description %}
+<div class="description pb-2">
+{{ tournament.player_scoreboard_description|safe }}
+</div>
+{% endif %}
+
+
 <div class="table-responsive">
 <table class="table">
 <thead>

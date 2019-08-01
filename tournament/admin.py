@@ -41,7 +41,7 @@ class TournamentAdmin(DjangoObjectActions, admin.ModelAdmin):
             'fields': ('name', 'short_name', 'bye_score')
         }),
         ('Public page', {
-            'fields': ('description', 'default_round_visibility', 'shown_players'),
+            'fields': ('description', 'default_round_visibility', 'shown_players', 'player_scoreboard_description'),
         }),
         ('Registration', {
             'fields': ('is_registration_open', 'max_teams', 'max_players_per_team'),
