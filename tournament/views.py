@@ -20,7 +20,7 @@ def sorted_scoreboard(scoreboard):
     """
     by_score = {}
     for (entity, score) in scoreboard.items():
-        # skip inactive
+        # skip inactive entity
         if not entity.active:
             continue
 

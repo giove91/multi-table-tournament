@@ -93,7 +93,7 @@ class TeamAdmin(admin.ModelAdmin):
 
 @admin.register(Player, site=admin_site)
 class PlayerAdmin(admin.ModelAdmin):
-    list_display = ('name', 'team', '_active', 'phone_number', 'is_captain')
+    list_display = ('name', 'team', '_active', 'phone_number', 'is_captain', 'phantom_score')
     list_filter = ('team', 'team__active')
     # list_editable = ('team', 'phone_number', 'is_captain')
 

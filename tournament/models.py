@@ -31,19 +31,21 @@ VISIBILITY_CHOICES = (
 class Score:
     """
     A score of a team or a player.
-    This class comprises a primary (more important) and a secondary (less important) score.
+    This class comprises a primary (more important) score, a secondary (less important) score,
+    and a phantom score (used to break ties by hand, e.g. if a tie break is played).
     It also keeps track of the number of matches and (in the case of one match)
     of the type of match (normal/bye).
     """
-    def __init__(self, primary=Decimal('0.0'), secondary=Decimal('0.0'), num_matches=0, match_type=None):
+    def __init__(self, primary=Decimal('0.0'), secondary=Decimal('0.0'), phantom=Decimal('0.0'), num_matches=0, match_type=None):
         self.primary = primary
         self.secondary = secondary
+        self.phantom = phantom
         self.num_matches = num_matches
         self.match_type = match_type
 
 
     def raw(self):
-        return (self.primary, self.secondary)
+        return (self.primary, self.secondary, self.phantom)
 
 
     def __repr__(self):
@@ -51,10 +53,12 @@ class Score:
 
 
     def __eq__(self, other):
-        return self.primary == other.primary and self.secondary == other.secondary and self.num_matches == other.num_matches
+        return self.primary == other.primary and self.secondary == other.secondary and self.phantom == other.phantom and self.num_matches == other.num_matches
 
     def __le__(self, other):
-        return self.primary < other.primary or self.primary == other.primary and (self.secondary < other.secondary or self.secondary == other.secondary and self.num_matches >= other.num_matches)
+        if self.raw() != other.raw():
+            return self.raw() < other.raw()
+        return self.num_matches >= other.num_matches
 
     def __gt__(self, other):
         if other is 0:
@@ -69,7 +73,12 @@ class Score:
         if other is 0:
             return self
         else:
-            return Score(self.primary + other.primary, self.secondary + other.secondary, self.num_matches + other.num_matches)
+            return Score(
+                primary=self.primary+other.primary,
+                secondary=self.secondary+other.secondary,
+                phantom=self.phantom+other.phantom,
+                num_matches=self.num_matches+other.num_matches
+            )
 
     def __radd__(self, other):
         if other is 0:
@@ -139,8 +148,13 @@ class Tournament(models.Model):
     def player_scoreboard(self, public=False):
         res = sum((match.player_scoreboard(public=public) for match in Match.objects.filter(round__tournament=self).prefetch_related('round', 'playerresult_set__player__team')), Counter())
         for player in Player.objects.filter(team__active=True):
+            # add player if not present
             if player not in res:
                 res[player] = Score()
+
+            # add phantom score if present
+            if player.phantom_score is not None:
+                res[player] += Score(phantom=player.phantom_score)
         return res
 
 
@@ -303,6 +317,7 @@ class Player(models.Model):
     phone_number = models.CharField(validators=[phone_regex], max_length=17, blank=True)
 
     is_captain = models.BooleanField(default=False)
+    phantom_score = models.DecimalField(max_digits=4, decimal_places=1, blank=True, null=True, default=None, help_text='Used to break ties in the player scoreboard (e.g. if a tiebreaker is played after the regular tournament). It does not affect the shown score.')
 
     def _active(self):
         return self.team.active if self.team is not None else False
@@ -443,7 +458,7 @@ class Match(models.Model):
 
         if self.type == BYE:
             return Counter({
-                team_result.team: Score(Decimal('1.0'), self.round.tournament.bye_score, 1, BYE) for team_result in self.teamresult_set.all()
+                team_result.team: Score(primary=Decimal('1.0'), secondary=self.round.tournament.bye_score, num_matches=1, match_type=BYE) for team_result in self.teamresult_set.all()
             })
 
         elif not self.valid() or any(team_result.score is None for team_result in self.teamresult_set.all()):
@@ -451,7 +466,7 @@ class Match(models.Model):
             if fill_results:
                 # treat all results as victories
                 return Counter({
-                    team_result.team: Score(Decimal('1.0'), self.round.tournament.bye_score, 1, NORMAL) for team_result in self.teamresult_set.all()
+                    team_result.team: Score(primary=Decimal('1.0'), secondary=self.round.tournament.bye_score, num_matches=1, match_type=NORMAL) for team_result in self.teamresult_set.all()
                 })
 
             else:
@@ -462,13 +477,17 @@ class Match(models.Model):
             if len(scores) == 1:
                 # draw
                 return Counter({
-                    team_result.team: Score(Decimal('0.5'), team_result.score, 1, NORMAL) for team_result in self.teamresult_set.all()
+                    team_result.team: Score(primary=Decimal('0.5'), secondary=team_result.score, num_matches=1, match_type=NORMAL) for team_result in self.teamresult_set.all()
                 })
 
             else:
                 # victory for one team
                 return Counter({
-                    team_result.team: Score(Decimal('1.0') if team_result.score == max(scores) else Decimal('0.0'), team_result.score, 1, NORMAL) for team_result in self.teamresult_set.all()
+                    team_result.team: Score(
+                        primary=(Decimal('1.0') if team_result.score == max(scores) else Decimal('0.0')),
+                        secondary=team_result.score,
+                        num_matches=1,
+                        match_type=NORMAL) for team_result in self.teamresult_set.all()
                 })
 
 
@@ -479,12 +498,12 @@ class Match(models.Model):
 
         if self.type == BYE:
             return Counter({
-                player_result.player: Score(Decimal('1.0'), num_matches=1, match_type=BYE) for player_result in self.playerresult_set.all()
+                player_result.player: Score(primary=Decimal('1.0'), num_matches=1, match_type=BYE) for player_result in self.playerresult_set.all()
             })
 
         else:
             return Counter({
-                player_result.player: Score(player_result.score if player_result.score is not None else Decimal('0.0'), num_matches=1, match_type=NORMAL) for player_result in self.playerresult_set.all()
+                player_result.player: Score(primary=(player_result.score if player_result.score is not None else Decimal('0.0')), num_matches=1, match_type=NORMAL) for player_result in self.playerresult_set.all()
             })
 
 
